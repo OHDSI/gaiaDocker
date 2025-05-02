@@ -1,0 +1,106 @@
+volumes:
+  rstudio-home-data:
+    name: rstudio-home-data
+  rstudio-tmp-data:
+    name: rstudio-tmp-data
+  gaia-solr:
+    name: gaia-solr
+  gaia-catalog:
+    name: gaia-catalog
+  gaia-db:
+    name: gaia-db
+
+services:
+
+  gaia-core: # built from hades image
+    profiles: [ "gaia" ]
+    image: gaia-core
+    build:
+      context: ${GAIA_GITHUB_URL}
+      dockerfile: ./docker/gaia-core/Dockerfile
+    container_name: gaia-core
+    secrets:
+      - GAIA_PG_PASSWORD
+      - HADES_PASSWORD
+    environment:
+      USER: ${HADES_USER}
+      POSTGRES_USER: ${GAIA_PG_USER}
+      POSTGRES_DB: ${GAIA_PG_DB}
+      POSTGRES_PASSWORD_FILE: /run/secrets/GAIA_PG_PASSWORD
+      POSTGRES_PORT: 5432
+      GAIA_CORE_API_PORT: ${GAIA_CORE_API_PORT}
+    ports:
+      - "8787:8787"
+    volumes:
+      - rstudio-home-data:/home
+      - rstudio-tmp-data:/tmp
+      - ./hades/00_set_secrets:/etc/cont-init.d/00_set_secrets
+    labels:
+      - "traefik.enable=true"
+
+  gaia-db:
+    profiles: [ "gaia" ]
+    image: gaia-db
+    build:
+      context: ${GAIA_GITHUB_URL}
+      dockerfile: ./docker/gaia-db/Dockerfile
+    container_name: gaia-db
+    secrets:
+      - GAIA_PG_PASSWORD
+    environment:
+      POSTGRES_USER: ${GAIA_PG_USER}
+      POSTGRES_DB: ${GAIA_PG_DB}
+      POSTGRES_PASSWORD_FILE: /run/secrets/GAIA_PG_PASSWORD
+      POSTGRES_PORT: 5432
+    ports:
+    - "${GAIA_PG_LOCALHOST_PORT}:5432"
+    volumes:
+      - gaia-db:/var/lib/postgresql/data
+
+  gaia-catalog:
+    profiles: [ "gaia" ]
+    image: gaia-catalog
+    build: 
+      context: ${GAIA_CATALOG_GITHUB_URL}
+    container_name: gaia-catalog
+    restart: unless-stopped
+    ports:
+      - "${GAIA_CATALOG_API_PORT}:${GAIA_CATALOG_API_PORT}"
+    depends_on:
+      - gaia-solr
+    entrypoint: ["python","ohdsi.py"]
+
+  gaia-solr:
+    profiles: [ "gaia" ]
+    container_name: gaia-solr
+    build: 
+      context: ${GAIA_SOLR_GITHUB_URL}
+    image: gaia-solr
+    ports:
+      - "8983:8983"
+    volumes:
+      - gaia-catalog:/gaia
+      - gaia-solr:/var/solr
+
+  gaia-degauss:
+    profiles: [ "degauss" ]
+    container_name: gaia-degauss
+    build:
+      context: ${GAIA_DEGAUSS_GITHUB_URL}
+    image: gaia-degauss
+    #entrypoint: ["bash", "-c", "sleep 9999"]
+    entrypoint: ["Rscript","degauss.R"]
+    command: []
+    environment:
+      GAIA_DEGAUSS_API_PORT: ${GAIA_DEGAUSS_API_PORT}
+    ports:
+      - "${GAIA_DEGAUSS_API_PORT}:${GAIA_DEGAUSS_API_PORT}"
+
+secrets:
+  HADES_PASSWORD:
+    file: ${HADES_PASSWORD_FILE}
+  GAIA_PG_PASSWORD:
+    file: ${GAIA_PG_PASSWORD_FILE}
+
+
+  
