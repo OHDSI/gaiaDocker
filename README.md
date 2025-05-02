@@ -63,5 +63,3 @@ docker compose --profile gaia up -d
 ```shell
 docker compose --profile gaia down
 ```
-
-## NOTE: containers will build the first time (may take a while)
