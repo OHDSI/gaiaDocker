@@ -5,8 +5,6 @@ volumes:
     name: rstudio-tmp-data
   gaia-solr:
     name: gaia-solr
-  gaia-catalog:
-    name: gaia-catalog
   gaia-db:
     name: gaia-db
 
@@ -19,6 +17,7 @@ services:
       context: ${GAIA_GITHUB_URL}
       dockerfile: ./docker/gaia-core/Dockerfile
     container_name: gaia-core
+    restart: unless-stopped
     secrets:
       - GAIA_PG_PASSWORD
       - HADES_PASSWORD
@@ -42,9 +41,9 @@ services:
     profiles: [ "gaia" ]
     image: gaia-db
     build:
-      context: ${GAIA_GITHUB_URL}
-      dockerfile: ./docker/gaia-db/Dockerfile
+      context: ./gaia-db
     container_name: gaia-db
+    restart: unless-stopped
     secrets:
       - GAIA_PG_PASSWORD
     environment:
@@ -64,11 +63,67 @@ services:
       context: ${GAIA_CATALOG_GITHUB_URL}
     container_name: gaia-catalog
     restart: unless-stopped
+    secrets:
+      - GAIA_X_API_KEY
+    environment:
+      GAIA_X_API_KEY_FILE: /run/secrets/GAIA_X_API_KEY
+      GAIA_DB_API_PORT: ${GAIA_DB_API_PORT}
+      GAIA_OSGEO_API_PORT: ${GAIA_OSGEO_API_PORT}
     ports:
       - "${GAIA_CATALOG_API_PORT}:${GAIA_CATALOG_API_PORT}"
     depends_on:
       - gaia-solr
     entrypoint: ["python","ohdsi.py"]
+    volumes:
+      - ./datastore:/data
+
+  gaia-postgis:
+    profiles: [ "gaia" ]
+    image: gaia-postgis
+    build:
+      context: ./
+      dockerfile: ./gaia-postgis/Dockerfile
+    container_name: gaia-postgis
+    restart: unless-stopped
+    secrets:
+      - GAIA_X_API_KEY
+      - GAIA_PG_PASSWORD
+    environment:
+      GAIA_X_API_KEY_FILE: /run/secrets/GAIA_X_API_KEY
+      POSTGRES_USER: ${GAIA_PG_USER}
+      POSTGRES_DB: ${GAIA_PG_DB}
+      POSTGRES_PASSWORD_FILE: /run/secrets/GAIA_PG_PASSWORD
+      POSTGRES_PORT: 5432
+    # command: tail -f /dev/null
+    command: tcpserver 0.0.0.0 ${GAIA_POSTGIS_API_PORT} ./api.sh
+    ports:
+      - "${GAIA_POSTGIS_API_PORT}:${GAIA_POSTGIS_API_PORT}"
+    volumes:
+      - ./datastore:/data
+
+  gaia-osgeo:
+    profiles: [ "gaia" ]
+    image: gaia-osgeo
+    build:
+      context: ./
+      dockerfile: ./gaia-osgeo/Dockerfile
+    container_name: gaia-osgeo
+    restart: unless-stopped
+    secrets:
+      - GAIA_X_API_KEY
+      - GAIA_PG_PASSWORD
+    environment:
+      GAIA_X_API_KEY_FILE: /run/secrets/GAIA_X_API_KEY
+      POSTGRES_USER: ${GAIA_PG_USER}
+      POSTGRES_DB: ${GAIA_PG_DB}
+      POSTGRES_PASSWORD_FILE: /run/secrets/GAIA_PG_PASSWORD
+      POSTGRES_PORT: 5432
+    # command: tail -f /dev/null
+    command: tcpserver 0.0.0.0 ${GAIA_OSGEO_API_PORT} ./api.sh
+    ports:
+      - "${GAIA_OSGEO_API_PORT}:${GAIA_OSGEO_API_PORT}"
+    volumes:
+      - ./datastore:/data
 
   gaia-solr:
     profiles: [ "gaia" ]
@@ -76,10 +131,11 @@ services:
     build: 
       context: ${GAIA_SOLR_GITHUB_URL}
     image: gaia-solr
+    restart: unless-stopped
     ports:
-      - "8983:8983"
+      - "${GAIA_SOLR_API_PORT}:${GAIA_SOLR_API_PORT}"
     volumes:
-      - gaia-catalog:/gaia
+      - ./datastore:/data
       - gaia-solr:/var/solr
 
   gaia-degauss:
@@ -88,6 +144,7 @@ services:
     build:
       context: ${GAIA_DEGAUSS_GITHUB_URL}
     image: gaia-degauss
+    restart: unless-stopped
     #entrypoint: ["bash", "-c", "sleep 9999"]
     entrypoint: ["Rscript","degauss.R"]
     command: []
@@ -101,6 +158,8 @@ secrets:
     file: ${HADES_PASSWORD_FILE}
   GAIA_PG_PASSWORD:
     file: ${GAIA_PG_PASSWORD_FILE}
+  GAIA_X_API_KEY:
+    file: ${GAIA_X_API_KEY_FILE}
 
 
   

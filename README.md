@@ -8,14 +8,22 @@ gaiaDocker runs the core OHDSI GIS technology stack using cross-platform Docker 
 
 This repository contains the Docker Compose file used to launch the OHDSI gaiaDocker Docker containers:
 
-- the OHDSI GIS gaia stack
-    - gaia-core
+- the OHDSI GIS gaia stack [ with: --profile gaia ]
+    - gaia-core  
+      Hades based R environment with additional GIS toolchain
 	- gaia-db  
-	- gaia-vocabulary
+	  postgis relational database as GIS datastore
 	- gaia-catalog
-	- gaia-solr
-	- gaia-degauss
+	  python flask app as an interface to gaia-solr at [http://localhost:5000](http://localhost:5000)
 	- gaia-osgeo
+	  gdal/ogr toolset for ETL
+	- gaia-postgis
+	  postgis toolset for ETL
+	- gaia-solr
+	  solr index of all catalog entries at [http://localhost:8983](http://localhost:8983)
+-  additional tools [ optional ] [ with: --profile degauss ]
+	- gaia-degauss
+	  degauss geocoder for adding lat/lon to address information 
 
 This repository is based on the [OHDSI Broadsea](https://github.com/OHDSI/Broadsea) implementation with future integration in mind.
 
@@ -34,7 +42,7 @@ Throughout this README, we will show docker compose commands with the convention
 
 ### Mac Silicon
 
-If using Mac Silicon (M1, M2), you **may** need to set the DOCKER_ARCH variable in Section 1 of the .env file to "linux/arm64". Some Broadsea services still need to run via emulation of linux/amd64 and are hard-coded as such.
+If using Mac Silicon (M1, M2, etc), you **may** need to set the DOCKER_ARCH variable in Section 1 of the .env file to "linux/arm64". Some Broadsea services still need to run via emulation of linux/amd64 and are hard-coded as such.
 
 ## gaiaDocker - Quick start
 
@@ -45,7 +53,7 @@ If using Mac Silicon (M1, M2), you **may** need to set the DOCKER_ARCH variable 
 git clone git@github.com:OHDSI/gaiaDocker.git
 ```
 
-- In a command line / terminal window - navigate to the directory where this README.md file is located and start the gaia Docker Containers using the below command. On Linux you may need to use 'sudo' to run this command. Wait up to one minute for the Docker containers to start.
+- In a command line / terminal window - navigate to the directory where this README.md file is located and start the gaia Docker Containers using the below command. On Linux you may need to use 'sudo' to run this command.
 
 ```shell
 docker compose --profile gaia up -d
@@ -53,12 +61,12 @@ docker compose --profile gaia up -d
 
 ### Build Notes:  
 
-- containers will build the first time the above command is run. It may take several mintues.  
-- the containers should run, but nothing has been tested ... yet
+- The first time the above command is run it will take several mintues for the containers to build.
+- The containers will run and you can explore, but there is no functionality yet (stay tuned).
 
 ## gaiaDocker - Quick end
 
-- In the directory where this README.md is locatred, in a command line / terminal window, use the below command to terminate the containers.  
+- In the directory where this README.md is located, in a command line / terminal window, use the below command to terminate the containers.  
 
 ```shell
 docker compose --profile gaia down
