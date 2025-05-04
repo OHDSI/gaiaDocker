@@ -13,16 +13,16 @@ This repository contains the Docker Compose file used to launch the OHDSI gaiaDo
       Hades based R environment with additional GIS toolchain
 	- gaia-db  
 	  postgis relational database as GIS datastore
-	- gaia-catalog
+	- gaia-catalog  
 	  python flask app as an interface to gaia-solr at [http://localhost:5000](http://localhost:5000)
-	- gaia-osgeo
+	- gaia-osgeo  
 	  gdal/ogr toolset for ETL
-	- gaia-postgis
+	- gaia-postgis  
 	  postgis toolset for ETL
-	- gaia-solr
+	- gaia-solr  
 	  solr index of all catalog entries at [http://localhost:8983](http://localhost:8983)
 -  additional tools [ optional ] [ with: --profile degauss ]
-	- gaia-degauss
+	- gaia-degauss  
 	  degauss geocoder for adding lat/lon to address information 
 
 This repository is based on the [OHDSI Broadsea](https://github.com/OHDSI/Broadsea) implementation with future integration in mind.
