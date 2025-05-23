@@ -1,0 +1,12 @@
+{
+  "Title": "OHDSI/GIS Gaia Health Outcomes",
+  "Creator": "Andrew Williams;Personal;Williams;Andrew;https://orcid.org/0000-0002-0692-412X;ORCID;https://orcid.org/;Tufts University;https://ror.org/05wvpxv85;ROR;https://ror.org/|Kyle Zollo;Personal;Zollo;Kyle;https://orcid.org/0000-0002-1615-590X;ORCID;https://orcid.org/;Tufts University;https://ror.org/05wvpxv85;ROR;https://ror.org/|Robert Miller;Personal;Miller;Robert;https://orcid.org/0000-0002-1787-2855;ORCID;https://orcid.org/;Tufts University;https://ror.org/05wvpxv85;ROR;https://ror.org/|Timothy B Norris;Personal;Norris;Timothy B;https://orcid.org/0000-0002-0898-3027;ORCID;https://orcid.org/;University of Miami Libraries, University of Miami;https://ror.org/02dgjyy92;ROR;https://ror.org/|Jake Gillberg;Personal;Gilberg;Jake|Polina Talapova;Personal;Talapova;Polina;https://orcid.org/0000-0003-4147-1485;ORCID;https://orcid.org/;Kharkiv National Medical University;https://ror.org/01sks0025;ROR;https://ror.org/|Jared Houghtaling;Personal;Houghtaling;Jared;https://orcid.org/0000-0003-1557-9716;ORCID;https://orcid.org/;Tufts University;https://ror.org/05wvpxv85;ROR;https://ror.org/|Jimmy Phuong;Personal;Phuong;Phuong;https://orcid.org/0000-0003-0956-8404;ORCID;https://orcid.org/;University of Washington;https://ror.org/00cvxb145;ROR;https://ror.org/|Jay Greenfield;Personal;Greenfield;Jay;https://orcid.org/0000-0003-2773-5317;ORCID;https://orcid.org/;CODATA|Doug Fils;Personal;Fils;Doug;https://orcid.org/0000-0002-2257-9127;ORCID;https://orcid.org/",
+  "Publisher": "Frost Institute for Data Science and Computing, University of Miami;https://ror.org/02dgjyy92;ROR;https://ror.org/|University of Miami Libraries, University of Miami;https://ror.org/02dgjyy92;ROR;https://ror.org/",
+  "Description": "Datasets curated for direct use in the OHDSI/GIS Gaia toolchain.",
+  "Language": "en",
+  "Collection_ID": "OHDSI/GIS",
+  "Funders": "TuftsCTSI;https://www.tuftsctsi.org/|IDSC;https://idsc.miami.edu|Library;https://www.library.miami.edu",
+  "Logo": "OHDSI-wide.png",
+  "Count": 3,
+  "Status": "published"
+}

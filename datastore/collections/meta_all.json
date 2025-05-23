@@ -1,0 +1,8 @@
+{
+  "Title": "All GDSC Collections",
+  "Description": "The University of Miami <b>Geospatial Data Special Collections</b> (GDSC) is a joint initiative between the <a href=\"https://idsc.miami.edu\">Institute for Data Science and Computing</a> (IDSC) and the <a href=\"https://www.library.miami.edu\">University of Miami Libraries</a> to make <b>geographic data</b> at the University of Miami more <b>discoverable</b>, <b>accessible</b>, and <b>interoperable</b>. To do this GDSC provides a non-proprietary platform to dynamically discover, publish, and/or consume geographic <b>data as a service</b>. The geographic data available through GDSC is a <b>highly curated</b> set of collections--or special collections--of geographic data with coverage in <b>south Florida</b> and the <b>Global South</b> of the western hemisphere.",
+  "Language": "en",
+  "Collection_ID": "all",
+  "Count": 142,
+  "Status": "published"
+}

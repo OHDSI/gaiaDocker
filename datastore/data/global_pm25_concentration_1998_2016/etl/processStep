@@ -1,0 +1,50 @@
+#########
+# GDSC ETL is performed in two steps: shell script to ETL data into postgres
+# and then additional transformations with SQL in postGIS (if needed).
+####
+
+#########
+# Step 1 - bash script (pseudo code)
+####
+
+# create directory structure and move into it
+mkdir -p /data/global_pm25_concentration_1998_2016/{download,etl} && cd /data/global_pm25_concentration_1998_2016
+
+# set update flag based on last update and update frequency
+do_update=0 if date() < last_update + update_frequency else do_update = 1
+
+# load into postGIS with:
+  ogr2ogr -lco GEOMETRY_NAME=geom -f PostgreSQL PG:"<postgres connection>" download/sdei-annual-pm2-5-concentrations-countries-urban-areas-v1-1998-2016-urban-areas.shp -nlt multipolygon -nln global_pm25_concentration_1998_2016
+
+#########
+# Step 2 - SQL script (pseudo code):
+####
+
+# remove duplicate points and make geometries valid:UPDATE global_pm25_concentration_1998_2016
+  SET geom=ST_MakeValid(ST_RemoveRepeatedPoints(geom));# add local geometry column and reproject existing geometries into local EPSG:
+SELECT AddGeometryColumn (
+  'global_pm25_concentration_1998_2016',
+  'geom_local', 3857, 'multipolygon', 2
+);
+UPDATE global_pm25_concentration_1998_2016
+  SET geom_local=ST_MakeValid(ST_RemoveRepeatedPoints(ST_Transform(ST_Multi(geom), 3857)));
+CREATE INDEX global_pm25_concentration_1998_2016_geom_local_idx
+  ON global_pm25_concentration_1998_2016
+  USING GIST (geom_local);
+NOTIFY pgrst, 'reload schema';"# Create derivative directory in data package on osgeo
+cd /data/global_pm25_concentration_1998_2016/
+mkdir -p derived
+
+# Create shapefile of table in derivate directory on osgeo 
+ogr2ogr -f "ESRI Shapefile" derived/global_pm25_concentration_1998_2016.shp PG:"dbname=$POSTGRES_DB port=$POSTGRES_PORT user=$POSTGRES_USER password=$POSTGRES_PASSWORD host=postgis-1pvwkxoldzim6fs4" global_pm25_concentration_1998_2016
+
+# Create downloadable tarfile of shp in derivative directory on osgeo
+tar -czf derived/global_pm25_concentration_1998_2016.shp.tar.gz meta_dcat_global_pm25_concentration_1998_2016.json -C derived global_pm25_concentration_1998_2016.shp -C derived global_pm25_concentration_1998_2016.prj -C derived global_pm25_concentration_1998_2016.shx -C derived global_pm25_concentration_1998_2016.dbf
+
+# Create pg_dump of table SQL in derivate directory on postgis.
+pg_dump -d $POSTGRES_DB -U $POSTGRES_USER -p $POSTGRES_PORT -h postgis-1pvwkxoldzim6fs4 -t global_pm25_concentration_1998_2016 > derived/global_pm25_concentration_1998_2016.sql
+
+Create downloadable tarfile of SQL in derivative directory on postgis
+tar -czf derived/global_pm25_concentration_1998_2016.sql.tar.gz meta_dcat_global_pm25_concentration_1998_2016.json -C derived global_pm25_concentration_1998_2016.sql
+
+

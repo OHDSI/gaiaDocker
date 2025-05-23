@@ -59,6 +59,7 @@ services:
   gaia-catalog:
     profiles: [ "gaia" ]
     image: gaia-catalog
+    user: root
     build: 
       context: ${GAIA_CATALOG_GITHUB_URL}
     container_name: gaia-catalog
@@ -67,13 +68,15 @@ services:
       - GAIA_X_API_KEY
     environment:
       GAIA_X_API_KEY_FILE: /run/secrets/GAIA_X_API_KEY
-      GAIA_DB_API_PORT: ${GAIA_DB_API_PORT}
+      GAIA_POSTGIS_API_PORT: ${GAIA_POSTGIS_API_PORT}
       GAIA_OSGEO_API_PORT: ${GAIA_OSGEO_API_PORT}
     ports:
       - "${GAIA_CATALOG_API_PORT}:${GAIA_CATALOG_API_PORT}"
     depends_on:
       - gaia-solr
-    entrypoint: ["python","ohdsi.py"]
+    entrypoint: ["tail","-f","/dev/null"]
+    command: tail -f /dev/null
+    # entrypoint: ["python","ohdsi.py"]
     volumes:
       - ./datastore:/data
 
@@ -90,16 +93,16 @@ services:
       - GAIA_PG_PASSWORD
     environment:
       GAIA_X_API_KEY_FILE: /run/secrets/GAIA_X_API_KEY
+      GAIA_POSTGIS_API_PORT: ${GAIA_POSTGIS_API_PORT}
       POSTGRES_USER: ${GAIA_PG_USER}
       POSTGRES_DB: ${GAIA_PG_DB}
       POSTGRES_PASSWORD_FILE: /run/secrets/GAIA_PG_PASSWORD
       POSTGRES_PORT: 5432
     # command: tail -f /dev/null
-    command: tcpserver 0.0.0.0 ${GAIA_POSTGIS_API_PORT} ./api.sh
     ports:
       - "${GAIA_POSTGIS_API_PORT}:${GAIA_POSTGIS_API_PORT}"
     volumes:
-      - ./datastore:/data
+      - ./datastore/data:/data
 
   gaia-osgeo:
     profiles: [ "gaia" ]
@@ -114,16 +117,16 @@ services:
       - GAIA_PG_PASSWORD
     environment:
       GAIA_X_API_KEY_FILE: /run/secrets/GAIA_X_API_KEY
+      GAIA_OSGEO_API_PORT: ${GAIA_OSGEO_API_PORT}
       POSTGRES_USER: ${GAIA_PG_USER}
       POSTGRES_DB: ${GAIA_PG_DB}
       POSTGRES_PASSWORD_FILE: /run/secrets/GAIA_PG_PASSWORD
       POSTGRES_PORT: 5432
     # command: tail -f /dev/null
-    command: tcpserver 0.0.0.0 ${GAIA_OSGEO_API_PORT} ./api.sh
     ports:
       - "${GAIA_OSGEO_API_PORT}:${GAIA_OSGEO_API_PORT}"
     volumes:
-      - ./datastore:/data
+      - ./datastore/data:/data
 
   gaia-solr:
     profiles: [ "gaia" ]

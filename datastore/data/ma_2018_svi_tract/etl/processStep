@@ -1,0 +1,52 @@
+#########
+# GDSC ETL is performed in two steps: shell script to ETL data into postgres
+# and then additional transformations with SQL in postGIS (if needed).
+####
+
+#########
+# Step 1 - bash script (pseudo code)
+####
+
+# create directory structure and move into it
+mkdir -p /data/ma_2018_svi_tract/{download,etl} && cd /data/ma_2018_svi_tract
+
+# set update flag based on last update and update frequency
+do_update=0 if date() < last_update + update_frequency else do_update = 1
+
+# download if update flag is set:
+if do_update == 1 then
+wget -O download/ma_2018_svi_tract.zip 'https://svi.cdc.gov/Documents/Data/2018/db/states/Massachusetts.zip'
+
+# unzip to download directory if update flag is set
+if do_update == 1 then
+unzip -d download download/ma_2018_svi_tract.zip && rm download/ma_2018_svi_tract.zip
+'
+# load into postGIS with:
+  ogr2ogr -lco GEOMETRY_NAME=geom -f PostgreSQL PG:"<postgres connection>" download/SVI2018_MASSACHUSETTS_tract.gdb -nlt multipolygon -nln ma_2018_svi_tract
+
+#########
+# Step 2 - SQL script (pseudo code):
+####
+
+# remove duplicate points and make geometries valid:UPDATE ma_2018_svi_tract
+  SET geom=ST_MakeValid(ST_RemoveRepeatedPoints(geom));# add local geometry column and reproject existing geometries into local EPSG:
+SELECT AddGeometryColumn (
+  'ma_2018_svi_tract',
+  'geom_local', 26986, 'multipolygon', 2
+);
+UPDATE ma_2018_svi_tract
+  SET geom_local=ST_MakeValid(ST_RemoveRepeatedPoints(ST_Transform(ST_Multi(geom), 26986)));
+CREATE INDEX ma_2018_svi_tract_geom_local_idx
+  ON ma_2018_svi_tract
+  USING GIST (geom_local);
+NOTIFY pgrst, 'reload schema';"# Create derivative directory in data package on osgeo
+cd /data/ma_2018_svi_tract/
+mkdir -p derived
+
+# Create pg_dump of table SQL in derivate directory on postgis.
+pg_dump -d $POSTGRES_DB -U $POSTGRES_USER -p $POSTGRES_PORT -h postgis-5x3epnz6pwavarfh -t ma_2018_svi_tract > derived/ma_2018_svi_tract.sql
+
+Create downloadable tarfile of SQL in derivative directory on postgis
+tar -czf derived/ma_2018_svi_tract.sql.tar.gz meta_dcat_ma_2018_svi_tract.json -C derived ma_2018_svi_tract.sql
+
+
