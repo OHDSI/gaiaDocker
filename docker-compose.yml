@@ -59,7 +59,7 @@ services:
   gaia-catalog:
     profiles: [ "gaia" ]
     image: gaia-catalog
-    user: root
+    # user: root
     build: 
       context: ${GAIA_CATALOG_GITHUB_URL}
     container_name: gaia-catalog
@@ -74,9 +74,9 @@ services:
       - "${GAIA_CATALOG_API_PORT}:${GAIA_CATALOG_API_PORT}"
     depends_on:
       - gaia-solr
-    entrypoint: ["tail","-f","/dev/null"]
-    command: tail -f /dev/null
-    # entrypoint: ["python","ohdsi.py"]
+    # entrypoint: ["tail","-f","/dev/null"]
+    # command: tail -f /dev/null
+    entrypoint: ["python","ohdsi.py"]
     volumes:
       - ./datastore:/data
 
