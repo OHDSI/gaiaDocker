@@ -76,7 +76,8 @@ services:
       - gaia-solr
     # entrypoint: ["tail","-f","/dev/null"]
     # command: tail -f /dev/null
-    entrypoint: ["python","ohdsi.py"]
+    # entrypoint: ["python","ohdsi.py"]
+    entrypoint: sh -c "sleep 15 && python ohdsi.py"
     volumes:
       - ./datastore:/data
 
