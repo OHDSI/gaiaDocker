@@ -1,0 +1,40 @@
+{
+    "name": "1984 Tanzania 2m Temperature Yearly Average (Copernicus)",
+    "creator": [
+        {
+            "@id": "https://www.sample-data-repository.org/person-role/472036",
+            "@type": "Role",
+            "roleName": "Principal Investigator",
+            "creator": {
+                "@id": "https://www.sample-data-repository.org/person/50663",
+                "@type": "Person",
+                "name": "OHDSI",
+                "url": "TBD"
+            }
+        }
+    ],
+    "url": "https://cds.climate.copernicus.eu/datasets/reanalysis-era5-land?tab=overview",
+    "provider": [
+        "OHDSI"
+    ],
+    "license": "Open Data Commons Attribution License (ODC-By): http://opendatacommons.org/licenses/by/1.0/",
+    "type": "Raster Dataset",
+    "datePublished": "2025-06-01",
+    "description": "A raster dataset with yearly averages of the 2m temperature from the Copernicus satellite sensors for Tanzania.",
+    "keywords": [
+        "Tanzania",
+        "temperature"
+    ],
+    "spatialCoverage": [
+        "29",
+        "-12",
+        "41",
+        "-0.8"
+    ],
+    "about": "TBD",
+    "variableMeasured": [
+        "2m_temperature;Average yearly 2m temperature in Kelvin from Copernicus reanalysis era5 sinagle levels;Copernicus;float;Kelvin"
+    ],
+    "distribution": "TBD",
+    "dateModified": "2025-06-01"
+}

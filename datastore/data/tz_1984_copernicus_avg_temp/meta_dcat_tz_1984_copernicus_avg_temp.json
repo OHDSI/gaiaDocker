@@ -1,0 +1,62 @@
+{
+    "dct:title": "1984 Tanzania 2m Temperature Yearly Average (Copernicus)",
+    "dct:creator": [
+        "OHDSI"
+    ],
+    "dct:identifier": "https://cds.climate.copernicus.eu/datasets/reanalysis-era5-land?tab=overview",
+    "dct:publisher": [
+        "OHDSI"
+    ],
+    "dct:rights": "Public Domain",
+    "dct:license": "Open Data Commons Attribution License (ODC-By): http://opendatacommons.org/licenses/by/1.0/",
+    "dct:coverage": [
+        "Tanzania"
+    ],
+    "dct:type": "Raster Dataset",
+    "dct:issued": "2025-06-01",
+    "dct:description": "A raster dataset with yearly averages of the 2m temperature from the Copernicus satellite sensors for Tanzania.",
+    "prov:qualifiedAttribution": "Copernicus",
+    "dcat:keyword": [
+        "Tanzania",
+        "temperature"
+    ],
+    "dct:language": "en",
+    "adms:representationTechnique": "raster",
+    "dcat:spatialResolutionInMeters": 0,
+    "dct:conformsTo": 4326,
+    "dcat:bbox": [
+        "29",
+        "-12",
+        "41",
+        "-0.8"
+    ],
+    "prov:action": "TBD",
+    "prov:wasGeneratedBy": "TBD",
+    "dcat:contactPoint": [
+        "TBD"
+    ],
+    "gdsc:attributes": [
+        "2m_temperature;Average yearly 2m temperature in Kelvin from Copernicus reanalysis era5 sinagle levels;Copernicus;float;Kelvin"
+    ],
+    "gdsc:collections": [
+        "Tanzania Climate Change",
+        "Tanzania Health Outcomes"
+    ],
+    "gdsc:functions": [
+        "gdsc_zonal_statistics"
+    ],
+    "gdsc:analyticConformsTo": 4326,
+    "dcat:accessURL": "TBD",
+    "gdsc:sponsor": [
+        "TuftsCTSI;https://www.tuftsctsi.org/",
+        "IDSC;https://idsc.miami.edu",
+        "Library;https://www.library.miami.edu"
+    ],
+    "dcat:downloadURL": "https://github.com/tibbben/copernicus_aggregate.git",
+    "gdsc:tablename": "tz_1984_copernicus_avg_temp",
+    "gdsc:up": "TBD",
+    "gdsc:podID": "TBD",
+    "dct:modified": "2025-06-01",
+    "dct:accrualPeriodicity": "As Needed",
+    "spdx:checksum": "TBD"
+}
