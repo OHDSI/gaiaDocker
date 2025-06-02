@@ -35,6 +35,11 @@ else do_update=1; fi
 
 # download if needed
 if [[ $do_update = 1 ]]; then
+  (exit 1)
+  until [[ "$?" == 0 ]]; do
+      wget -O download/global_pm25_concentration_1998_2016.zip 'https://sedac.ciesin.columbia.edu/downloads/data/sdei/sdei-annual-pm2-5-concentrations-countries-urban-areas-v1-1998-2016/sdei-annual-pm2-5-concentrations-countries-urban-areas-v1-1998-2016-urban-areas-shp.zip'
+  done
+  unzip -d download download/global_pm25_concentration_1998_2016.zip && rm download/global_pm25_concentration_1998_2016.zip
   # record download datestamp
   echo $(date '+%F %T') > datestamp
 fi
