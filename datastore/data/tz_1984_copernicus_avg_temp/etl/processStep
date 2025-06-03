@@ -1,0 +1,31 @@
+#########
+# GDSC ETL is performed in two steps: shell script to ETL data into postgres
+# and then additional transformations with SQL in postGIS (if needed).
+####
+
+#########
+# Step 1 - bash script (pseudo code)
+####
+
+# create directory structure and move into it
+mkdir -p /data/tz_1984_copernicus_avg_temp/{download,etl} && cd /data/tz_1984_copernicus_avg_temp
+
+# set update flag based on last update and update frequency
+do_update=0 if date() < last_update + update_frequency else do_update = 1
+
+# clone a git repo and run the code# save netcdf as tif
+cd download
+gdal_translate -a_srs EPSG:4326 tz_1984_copernicus_avg_temp.nc tz_1984_copernicus_avg_temp.tif
+cd ..
+
+
+#########
+# Step 2 - SQL script (pseudo code):
+####
+
+# load raster into postGIS with:
+    raster2pgsql -s 4326 -d -C -I tz_1984_copernicus_avg_temp.tif -F -t 256x256 tz_1984_copernicus_avg_temp > load_raster.sql
+psql <connection options> < load_raster.sql
+rm load_raster.sql
+
+

@@ -1,62 +1,36 @@
 {
-    "dct:title": "1984 Tanzania 2m Temperature Yearly Average (Copernicus)",
-    "dct:creator": [
-        "OHDSI"
-    ],
-    "dct:identifier": "https://cds.climate.copernicus.eu/datasets/reanalysis-era5-land?tab=overview",
-    "dct:publisher": [
-        "OHDSI"
-    ],
-    "dct:rights": "Public Domain",
-    "dct:license": "Open Data Commons Attribution License (ODC-By): http://opendatacommons.org/licenses/by/1.0/",
-    "dct:coverage": [
-        "Tanzania"
-    ],
-    "dct:type": "Raster Dataset",
-    "dct:issued": "2025-06-01",
-    "dct:description": "A raster dataset with yearly averages of the 2m temperature from the Copernicus satellite sensors for Tanzania.",
-    "prov:qualifiedAttribution": "Copernicus",
-    "dcat:keyword": [
-        "Tanzania",
-        "temperature"
-    ],
-    "dct:language": "en",
-    "adms:representationTechnique": "raster",
-    "dcat:spatialResolutionInMeters": 0,
-    "dct:conformsTo": 4326,
-    "dcat:bbox": [
-        "29",
-        "-12",
-        "41",
-        "-0.8"
-    ],
-    "prov:action": "TBD",
-    "prov:wasGeneratedBy": "TBD",
-    "dcat:contactPoint": [
-        "TBD"
-    ],
-    "gdsc:attributes": [
-        "2m_temperature;Average yearly 2m temperature in Kelvin from Copernicus reanalysis era5 sinagle levels;Copernicus;float;Kelvin"
-    ],
-    "gdsc:collections": [
-        "Tanzania Climate Change",
-        "Tanzania Health Outcomes"
-    ],
-    "gdsc:functions": [
-        "gdsc_zonal_statistics"
-    ],
-    "gdsc:analyticConformsTo": 4326,
-    "dcat:accessURL": "TBD",
-    "gdsc:sponsor": [
-        "TuftsCTSI;https://www.tuftsctsi.org/",
-        "IDSC;https://idsc.miami.edu",
-        "Library;https://www.library.miami.edu"
-    ],
-    "dcat:downloadURL": "https://github.com/tibbben/copernicus_aggregate.git",
-    "gdsc:tablename": "tz_1984_copernicus_avg_temp",
-    "gdsc:up": "TBD",
-    "gdsc:podID": "TBD",
-    "dct:modified": "2025-06-01",
-    "dct:accrualPeriodicity": "As Needed",
-    "spdx:checksum": "TBD"
+  "dct:title": "1984 Tanzania 2m Temperature Yearly Average (Copernicus)",
+  "dct:creator": ["OHDSI"],
+  "dct:identifier": "https://cds.climate.copernicus.eu/datasets/reanalysis-era5-land?tab=overview",
+  "dct:publisher": ["OHDSI"],
+  "dct:rights": "Public Domain",
+  "dct:license": "Open Data Commons Attribution License (ODC-By): http://opendatacommons.org/licenses/by/1.0/",
+  "dct:coverage": ["Tanzania"],
+  "dct:type": "Raster Dataset",
+  "dct:issued": "2025-06-01T00:00:00Z",
+  "dct:description": "A raster dataset with yearly averages of the 2m temperature from the Copernicus satellite sensors for Tanzania.",
+  "prov:qualifiedAttribution": "Copernicus",
+  "dcat:keyword": ["Tanzania", "temperature"],
+  "dct:language": "en",
+  "adms:representationTechnique": "raster",
+  "dcat:spatialResolutionInMeters": 0,
+  "dct:conformsTo": "EPSG:4326",
+  "dcat:bbox": "POLYGON((28.875 -64.875,28.875 -0.875,92.875 -0.875,92.875 -64.875,28.875 -64.875))",
+  "prov:action": "#########\n# GDSC ETL is performed in two steps: shell script to ETL data into postgres\n# and then additional transformations with SQL in postGIS (if needed).\n####\n\n#########\n# Step 1 - bash script (pseudo code)\n####\n\n# create directory structure and move into it\nmkdir -p /data/tz_1984_copernicus_avg_temp/{download,etl} && cd /data/tz_1984_copernicus_avg_temp\n\n# set update flag based on last update and update frequency\ndo_update=0 if date() < last_update + update_frequency else do_update = 1\n\n# clone a git repo and run the code# save netcdf as tif\ncd download\ngdal_translate -a_srs EPSG:4326 tz_1984_copernicus_avg_temp.nc tz_1984_copernicus_avg_temp.tif\ncd ..\n\n\n#########\n# Step 2 - SQL script (pseudo code):\n####\n\n# load raster into postGIS with:\n    raster2pgsql -s 4326 -d -C -I tz_1984_copernicus_avg_temp.tif -F -t 256x256 tz_1984_copernicus_avg_temp > load_raster.sql\npsql <connection options> < load_raster.sql\nrm load_raster.sql\n\n",
+  "prov:wasGeneratedBy": "GDSC automation (see Process Step)",
+  "dcat:contactPoint": ["Timothy Norris", "Librarian Associate Professor", "University of Miami Libraries, Frost Institute for Data Science and Computing", "txn60@miami.edu"],
+  "gdsc:attributes": ["2m_temperature;Average yearly 2m temperature in Kelvin from Copernicus reanalysis era5 sinagle levels;Copernicus;float;Kelvin"],
+  "gdsc:collections": ["Tanzania Climate Change", "Tanzania Health Outcomes"],
+  "gdsc:functions": ["gdsc_zonal_statistics"],
+  "gdsc:analyticConformsTo": "EPSG:4326",
+  "dcat:accessURL": "/data/tz_1984_copernicus_avg_temp/",
+  "gdsc:sponsor": ["TuftsCTSI;https://www.tuftsctsi.org/", "IDSC;https://idsc.miami.edu", "Library;https://www.library.miami.edu"],
+  "dcat:downloadURL": "https://github.com/tibbben/copernicus_aggregate.git",
+  "gdsc:tablename": "tz_1984_copernicus_avg_temp",
+  "gdsc:up": "true",
+  "gdsc:podID": "postgis-mvznqevo8s0vzrl3",
+  "dct:modified": "2025-06-02 23:13:11",
+  "dct:accrualPeriodicity": "As Needed",
+  "spdx:checksum": "TBD",
+  "dct:extent": ["94769443", "91M"]
 }
