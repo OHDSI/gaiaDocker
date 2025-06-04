@@ -37,7 +37,7 @@ fi
 else do_update=1; fi
 
 cd download
-gdal_translate -a_srs EPSG:4326 tz_1984_copernicus_avg_temp.nc tz_1984_copernicus_avg_temp.tif
+gdal_translate NETCDF:tz_1984_copernicus_avg_temp.nc:2m_temperature tz_1984_copernicus_avg_temp.tif
 cd ..
 
 

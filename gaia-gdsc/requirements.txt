@@ -1,0 +1,11 @@
+pandas
+bs4
+requests
+kubernetes
+boxsdk
+boxsdk[jwt]
+python-dotenv
+pyyaml
+openpyxl
+netCDF4
+cdsapi

@@ -5,6 +5,7 @@ unset CDPATH IFS TMPDIR
 umask 0077
 GAIA_X_API_KEY=$(cat $GAIA_X_API_KEY_FILE)
 
+# check for the correct request method, fail if not POST
 read -r request_line
 request_method=$(printf "%s" "$request_line" | sed 's/ .*//')
 if printf "%s" "$request_method" | grep -qi '^post'
@@ -24,6 +25,7 @@ fi
 content_length=0
 in_body=0
 
+# read the request
 while IFS='' read -r line
 do
     if test $in_body -eq 1
@@ -54,6 +56,7 @@ do
     fi
 done
 
+# fail if GAIA_X_API_KEY not correct
 if test $x_api_key != $GAIA_X_API_KEY
 then
     cat <<eof
@@ -62,12 +65,22 @@ eof
     exit 0
 fi
 
-res=$(bash "$request_body" 2>&1)
+
+# run the command on the correct shell
+if [ -z "$(which bash)" ]; then
+  res=$(sh "$request_body" 2>&1)
+else
+  res=$(bash "$request_body" 2>&1)
+fi
+res=$(echo $res | tr -d \")
+
+# create response
 content="{\
 \"method\": \"$request_method\", \
 \"res\": \"$res\"\
 }"
 
+# send response
 cat <<eof
 HTTP/1.1 200 OK
 Content-type: application/json

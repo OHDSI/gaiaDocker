@@ -12,8 +12,8 @@
 (exit 1)
 until [[ "$?" == 0 ]]; do
     cd /data/tz_1984_copernicus_avg_temp/download
-    raster2pgsql -s 4326 -d -C -I tz_1984_copernicus_avg_temp.tif -F -t 256x256 tz_1984_copernicus_avg_temp > load_raster.sql
-    psql -d $POSTGRES_DB -U $POSTGRES_USER -p $POSTGRES_PORT -h postgis-mvznqevo8s0vzrl3 < load_raster.sql
+    raster2pgsql -s 4326 -d -C -I tz_1984_copernicus_avg_temp.tif -F tz_1984_copernicus_avg_temp > load_raster.sql
+    psql -d $POSTGRES_DB -U $POSTGRES_USER -p $POSTGRES_PORT -h gaia-db < load_raster.sql
     rm load_raster.sql
     cd /data/tz_1984_copernicus_avg_temp
 done

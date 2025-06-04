@@ -70,13 +70,13 @@ services:
       GAIA_X_API_KEY_FILE: /run/secrets/GAIA_X_API_KEY
       GAIA_POSTGIS_API_PORT: ${GAIA_POSTGIS_API_PORT}
       GAIA_OSGEO_API_PORT: ${GAIA_OSGEO_API_PORT}
+      GAIA_GIT_API_PORT: ${GAIA_GIT_API_PORT}
+      GAIA_GDSC_API_PORT: ${GAIA_GDSC_API_PORT}
     ports:
       - "${GAIA_CATALOG_API_PORT}:${GAIA_CATALOG_API_PORT}"
     depends_on:
       - gaia-solr
-    # entrypoint: ["tail","-f","/dev/null"]
-    # command: tail -f /dev/null
-    # entrypoint: ["python","ohdsi.py"]
+    #entrypoint: ["tail","-f","/dev/null"]
     entrypoint: sh -c "sleep 15 && python ohdsi.py"
     volumes:
       - ./datastore:/data
@@ -142,6 +142,46 @@ services:
       - ./datastore:/data
       - gaia-solr:/var/solr
 
+  gaia-gdsc:
+    profiles: [ "gaia" ]
+    container_name: gaia-gdsc
+    build: 
+      context: ./
+      dockerfile: ./gaia-gdsc/Dockerfile
+    image: gaia-gdsc
+    restart: unless-stopped
+    secrets:
+      - GAIA_X_API_KEY
+      - COPERNICUS_KEY
+    environment:
+      GAIA_X_API_KEY_FILE: /run/secrets/GAIA_X_API_KEY
+      GAIA_COPERNICUS_KEY_FILE: /run/secrets/COPERNICUS_KEY
+      GAIA_GDSC_API_PORT: ${GAIA_GDSC_API_PORT}
+    ports:
+      - "${GAIA_GDSC_API_PORT}:${GAIA_GDSC_API_PORT}"
+    volumes:
+      - ./datastore/data:/data
+    # command: tail -f /dev/null
+
+  gaia-git:
+    profiles: [ "gaia" ]
+    container_name: gaia-git
+    build: 
+      context: ./
+      dockerfile: ./gaia-git/Dockerfile
+    image: gaia-git
+    restart: unless-stopped
+    secrets:
+      - GAIA_X_API_KEY
+    environment:
+      GAIA_X_API_KEY_FILE: /run/secrets/GAIA_X_API_KEY
+      GAIA_GIT_API_PORT: ${GAIA_GIT_API_PORT}
+    ports:
+      - "${GAIA_GIT_API_PORT}:${GAIA_GIT_API_PORT}"
+    volumes:
+      - ./datastore/data:/data
+    # entrypoint: ["sh", "-c", "sleep 9999"]
+
   gaia-degauss:
     profiles: [ "degauss" ]
     container_name: gaia-degauss
@@ -164,6 +204,8 @@ secrets:
     file: ${GAIA_PG_PASSWORD_FILE}
   GAIA_X_API_KEY:
     file: ${GAIA_X_API_KEY_FILE}
+  COPERNICUS_KEY:
+    file: ${GAIA_COPERNICUS_KEY_FILE}
 
 
   

@@ -9,8 +9,8 @@ gaiaDocker runs the core OHDSI GIS technology stack using cross-platform Docker 
 This repository contains the Docker Compose file used to launch the OHDSI gaiaDocker Docker containers:
 
 - the OHDSI GIS gaia stack [ with: --profile gaia ]
-    - gaia-core  
-      Hades based R environment with additional GIS toolchain
+  - gaia-core  
+    Hades based R environment with additional GIS toolchain
 	- gaia-db  
 	  postgis relational database as GIS datastore
 	- gaia-catalog  
@@ -19,6 +19,10 @@ This repository contains the Docker Compose file used to launch the OHDSI gaiaDo
 	  gdal/ogr toolset for ETL
 	- gaia-postgis  
 	  postgis toolset for ETL
+	- gaia-git  
+	  git for using external code
+	- gaia-gdsc 
+	  python environment for data processing
 	- gaia-solr  
 	  solr index of all catalog entries at [http://localhost:8983](http://localhost:8983)
 -  additional tools [ optional ] [ with: --profile degauss ]
@@ -42,7 +46,7 @@ Throughout this README, we will show docker compose commands with the convention
 
 ### Mac Silicon
 
-If using Mac Silicon (M1, M2, etc), you **may** need to set the DOCKER_ARCH variable in Section 1 of the .env file to "linux/arm64". Some Broadsea services still need to run via emulation of linux/amd64 and are hard-coded as such.
+If using Mac Silicon (M1, M2, etc), you **may** need to set the DOCKER_ARCH variable in Section 1 of the .env file to "linux/arm64" (line 5). Some Broadsea services still need to run via emulation of linux/amd64 and are hard-coded as such.
 
 ## gaiaDocker - Quick start
 
@@ -59,6 +63,13 @@ git clone git@github.com:OHDSI/gaiaDocker.git
 docker compose --profile gaia up -d
 ```
 
+--or--  
+
+
+```shell
+docker-compose --profile gaia up -d
+```
+
 ### Build Notes:  
 
 - The first time the above command is run it will take several mintues for the containers to build.
@@ -70,4 +81,11 @@ docker compose --profile gaia up -d
 
 ```shell
 docker compose --profile gaia down
+```
+
+--or--  
+
+
+```shell
+docker-compose --profile gaia down
 ```
