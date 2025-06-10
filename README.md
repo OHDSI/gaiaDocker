@@ -12,25 +12,25 @@ This repository contains the Docker Compose file used to launch the OHDSI gaiaDo
   - gaia-core  
     Hades based R environment with additional GIS toolchain  
     image: [OHDSI/GIS#containerize:./docker/gaia-core](https://github.com/OHDSI/GIS)  
-	- gaia-db  
+  - gaia-db  
 	  postgis relational database as GIS datastore  
 	  image: [OHDSI/gaiaDB#main:./](https://github.com/OHDSI/gaiaDB)  
-	- gaia-catalog  
+  - gaia-catalog  
 	  python flask app as an interface to gaia-solr at [http://localhost:5000](http://localhost:5000)  
 	  image: [OHDSI/gaiaCatalog#main:./docker/repository](https://github.com/OHDSI/gaiaCatalog)  
-	- gaia-solr  
+  - gaia-solr  
 	  solr index of all catalog entries at [http://localhost:8983](http://localhost:8983)  
 	  image: [OHDSI/gaiaCatalog#main:./docker/solr](https://github.com/OHDSI/gaiaCatalog)  
-	- gaia-osgeo  
+  - gaia-osgeo  
 	  gdal/ogr toolset for ETL  
 	  image: [OHDSI/gaiaDocker#main:./docker/ohdsi-osgeo](https://github.com/OHDSI/gaiaDocker)  
-	- gaia-postgis  
+  - gaia-postgis  
 	  postgis toolset for ETL  
 	  image: [OHDSI/gaiaDocker#main:./docker/ohdsi-postgis](https://github.com/OHDSI/gaiaDocker)  
-	- gaia-git  
-	  git for using external code
+  - gaia-git  
+	  git for using external code  
 	  image: [OHDSI/gaiaDocker#main:./docker/ohdsi-git](https://github.com/OHDSI/gaiaDocker)  
-	- gaia-gdsc  
+  - gaia-gdsc  
 	  python environment for data processing  
 	  image: [OHDSI/gaiaDocker#main:./docker/ohdsi-gdsc](https://github.com/OHDSI/gaiaDocker)  
 
