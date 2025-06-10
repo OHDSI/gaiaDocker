@@ -82,7 +82,7 @@ services:
     #entrypoint: ["tail","-f","/dev/null"]
     entrypoint: sh -c "sleep 15 && python ohdsi.py"
     volumes:
-      - ../gaiaCatalog/datastore:/data
+      - ../gaiaCatalog/datastore/data:/data
 
   gaia-solr:
     profiles: [ "gaia" ]
@@ -120,7 +120,7 @@ services:
     ports:
       - "${GAIA_POSTGIS_API_PORT}:${GAIA_POSTGIS_API_PORT}"
     volumes:
-      - ../gaiaCatalog/datastore:/data
+      - ../gaiaCatalog/datastore/data:/data
 
   gaia-osgeo:
     profiles: [ "gaia" ]
@@ -144,7 +144,7 @@ services:
     ports:
       - "${GAIA_OSGEO_API_PORT}:${GAIA_OSGEO_API_PORT}"
     volumes:
-      - ../gaiaCatalog/datastore:/data
+      - ../gaiaCatalog/datastore/data:/data
 
   gaia-gdsc:
     profiles: [ "gaia" ]
@@ -164,7 +164,7 @@ services:
     ports:
       - "${GAIA_GDSC_API_PORT}:${GAIA_GDSC_API_PORT}"
     volumes:
-      - ../gaiaCatalog/datastore:/data
+      - ../gaiaCatalog/datastore/data:/data
     # command: tail -f /dev/null
 
   gaia-git:
@@ -183,7 +183,7 @@ services:
     ports:
       - "${GAIA_GIT_API_PORT}:${GAIA_GIT_API_PORT}"
     volumes:
-      - ../gaiaCatalog/datastore:/data
+      - ../gaiaCatalog/datastore/data:/data
     # entrypoint: ["sh", "-c", "sleep 9999"]
 
   gaia-degauss:
