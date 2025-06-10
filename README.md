@@ -11,23 +11,33 @@ This repository contains the Docker Compose file used to launch the OHDSI gaiaDo
 - the OHDSI GIS gaia stack [ with: --profile gaia ]
   - gaia-core  
     Hades based R environment with additional GIS toolchain  
+    image: [OHDSI/GIS#containerize:./docker/gaia-core](https://github.com/OHDSI/GIS)  
 	- gaia-db  
 	  postgis relational database as GIS datastore  
+	  image: [OHDSI/gaiaDB#main:./](https://github.com/OHDSI/gaiaDB)  
 	- gaia-catalog  
 	  python flask app as an interface to gaia-solr at [http://localhost:5000](http://localhost:5000)  
-	- gaia-osgeo  
-	  gdal/ogr toolset for ETL  
-	- gaia-postgis  
-	  postgis toolset for ETL  
-	- gaia-git  
-	  git for using external code
-	- gaia-gdsc  
-	  python environment for data processing  
+	  image: [OHDSI/gaiaCatalog#main:./docker/repository](https://github.com/OHDSI/gaiaCatalog)  
 	- gaia-solr  
 	  solr index of all catalog entries at [http://localhost:8983](http://localhost:8983)  
+	  image: [OHDSI/gaiaCatalog#main:./docker/solr](https://github.com/OHDSI/gaiaCatalog)  
+	- gaia-osgeo  
+	  gdal/ogr toolset for ETL  
+	  image: [OHDSI/gaiaDocker#main:./docker/ohdsi-osgeo](https://github.com/OHDSI/gaiaDocker)  
+	- gaia-postgis  
+	  postgis toolset for ETL  
+	  image: [OHDSI/gaiaDocker#main:./docker/ohdsi-postgis](https://github.com/OHDSI/gaiaDocker)  
+	- gaia-git  
+	  git for using external code
+	  image: [OHDSI/gaiaDocker#main:./docker/ohdsi-git](https://github.com/OHDSI/gaiaDocker)  
+	- gaia-gdsc  
+	  python environment for data processing  
+	  image: [OHDSI/gaiaDocker#main:./docker/ohdsi-gdsc](https://github.com/OHDSI/gaiaDocker)  
+
 -  additional tools [ optional ] [ with: --profile degauss ]  
 	- gaia-degauss  
 	  degauss geocoder for adding lat/lon to address information  
+	  image: [GDSC/docker#ohdsi:./builds/degauss](https://github.com/Geospatial-Digital-Special-Collections/docker)  
 
 This repository is based on the [OHDSI Broadsea](https://github.com/OHDSI/Broadsea) implementation with future integration in mind.  
 
@@ -51,6 +61,8 @@ All secrets are in the top-level secrets folder. For gaiaDocker there is a gaia 
 ### Mac Silicon  
 
 If using Mac Silicon (M1, M2, etc), you **may** need to set the DOCKER_ARCH variable in Section 1 of the .env file to "linux/arm64" (line 5). Some Broadsea services still need to run via emulation of linux/amd64 and are hard-coded as such.  
+
+It is likely the gaia-core container will run, but RStudio login will fail on Mac Silicon. The base Hades image upon which this version of gaia-core is built is only maintained for amd64 architectures.  
 
 ## gaiaDocker - Quick start  
 
@@ -77,7 +89,14 @@ docker-compose --profile gaia up -d
 ### Build Notes:  
 
 - The first time the above command is run it will take several mintues for the containers to build.
-- The containers will run and you can explore, but there is no functionality yet (stay tuned).
+- The containers will run and you can explore.  
+
+### Existing Functionality (with default credentials)  
+
+- In the gaia-catalog (locahost:5000) the red buttons next to the dataset name will load the specific layer into the public schema of the gaia-db when clicked. The structure of the source data is maintained to the extent possible. If successful the dot will turn green.
+- In the gaia-solr (localhost:8983) you can explore the two indexes (collections and dcat). The dcat collection is the index for the data layers.
+- In the gaia-core (localhost:8787) you can login as user:ohdsi with pass:mypass to run RStudio with the geospatial extensions loaded (windows only)
+- You can connect to the gaia-db with a postgres client like PGAdmin or QGIS with host:localhost, port:5433, database:gaiaDB, user:postgres, pass:SuperSecret
 
 ## gaiaDocker - Quick end  
 
