@@ -14,7 +14,7 @@ services:
     profiles: [ "gaia" ]
     image: gaia-core
     build:
-      context: ${GAIA_GITHUB_URL}
+      context: ${GAIA_CORE_GITHUB_URL}
       dockerfile: ./docker/gaia-core/Dockerfile
     container_name: gaia-core
     restart: unless-stopped
@@ -30,6 +30,7 @@ services:
       GAIA_CORE_API_PORT: ${GAIA_CORE_API_PORT}
     ports:
       - "8787:8787"
+      - "6311:6311"
     volumes:
       - rstudio-home-data:/home
       - rstudio-tmp-data:/tmp
@@ -41,7 +42,8 @@ services:
     profiles: [ "gaia" ]
     image: gaia-db
     build:
-      context: ./gaia-db
+      context: ${GAIA_DB_GITHUB_URL}
+      dockerfile: ./Dockerfile
     container_name: gaia-db
     restart: unless-stopped
     secrets:
@@ -62,6 +64,7 @@ services:
     # user: root
     build: 
       context: ${GAIA_CATALOG_GITHUB_URL}
+      dockerfile: ./docker/repository/Dockerfile
     container_name: gaia-catalog
     restart: unless-stopped
     secrets:
@@ -133,13 +136,14 @@ services:
     profiles: [ "gaia" ]
     container_name: gaia-solr
     build: 
-      context: ${GAIA_SOLR_GITHUB_URL}
+      context: ${GAIA_CATALOG_GITHUB_URL}
+      dockerfile: ./docker/solr/Dockerfile
     image: gaia-solr
     restart: unless-stopped
     ports:
       - "${GAIA_SOLR_API_PORT}:${GAIA_SOLR_API_PORT}"
     volumes:
-      - ./datastore:/data
+      - ../gaiaCatalog/datastore:/catalog
       - gaia-solr:/var/solr
 
   gaia-gdsc:
