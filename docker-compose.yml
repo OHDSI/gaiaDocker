@@ -82,13 +82,27 @@ services:
     #entrypoint: ["tail","-f","/dev/null"]
     entrypoint: sh -c "sleep 15 && python ohdsi.py"
     volumes:
-      - ./datastore:/data
+      - ../gaiaCatalog/datastore/data:/data
+
+  gaia-solr:
+    profiles: [ "gaia" ]
+    container_name: gaia-solr
+    build: 
+      context: ${GAIA_CATALOG_GITHUB_URL}
+      dockerfile: ./docker/solr/Dockerfile
+    image: gaia-solr
+    restart: unless-stopped
+    ports:
+      - "${GAIA_SOLR_API_PORT}:${GAIA_SOLR_API_PORT}"
+    volumes:
+      - ../gaiaCatalog/datastore:/catalog
+      - gaia-solr:/var/solr
 
   gaia-postgis:
     profiles: [ "gaia" ]
     image: gaia-postgis
     build:
-      context: ./
+      context: ./docker/
       dockerfile: ./gaia-postgis/Dockerfile
     container_name: gaia-postgis
     restart: unless-stopped
@@ -106,13 +120,13 @@ services:
     ports:
       - "${GAIA_POSTGIS_API_PORT}:${GAIA_POSTGIS_API_PORT}"
     volumes:
-      - ./datastore/data:/data
+      - ../gaiaCatalog/datastore/data:/data
 
   gaia-osgeo:
     profiles: [ "gaia" ]
     image: gaia-osgeo
     build:
-      context: ./
+      context: ./docker/
       dockerfile: ./gaia-osgeo/Dockerfile
     container_name: gaia-osgeo
     restart: unless-stopped
@@ -130,27 +144,13 @@ services:
     ports:
       - "${GAIA_OSGEO_API_PORT}:${GAIA_OSGEO_API_PORT}"
     volumes:
-      - ./datastore/data:/data
-
-  gaia-solr:
-    profiles: [ "gaia" ]
-    container_name: gaia-solr
-    build: 
-      context: ${GAIA_CATALOG_GITHUB_URL}
-      dockerfile: ./docker/solr/Dockerfile
-    image: gaia-solr
-    restart: unless-stopped
-    ports:
-      - "${GAIA_SOLR_API_PORT}:${GAIA_SOLR_API_PORT}"
-    volumes:
-      - ../gaiaCatalog/datastore:/catalog
-      - gaia-solr:/var/solr
+      - ../gaiaCatalog/datastore/data:/data
 
   gaia-gdsc:
     profiles: [ "gaia" ]
     container_name: gaia-gdsc
     build: 
-      context: ./
+      context: ./docker/
       dockerfile: ./gaia-gdsc/Dockerfile
     image: gaia-gdsc
     restart: unless-stopped
@@ -164,14 +164,14 @@ services:
     ports:
       - "${GAIA_GDSC_API_PORT}:${GAIA_GDSC_API_PORT}"
     volumes:
-      - ./datastore/data:/data
+      - ../gaiaCatalog/datastore/data:/data
     # command: tail -f /dev/null
 
   gaia-git:
     profiles: [ "gaia" ]
     container_name: gaia-git
     build: 
-      context: ./
+      context: ./docker/
       dockerfile: ./gaia-git/Dockerfile
     image: gaia-git
     restart: unless-stopped
@@ -183,7 +183,7 @@ services:
     ports:
       - "${GAIA_GIT_API_PORT}:${GAIA_GIT_API_PORT}"
     volumes:
-      - ./datastore/data:/data
+      - ../gaiaCatalog/datastore/data:/data
     # entrypoint: ["sh", "-c", "sleep 9999"]
 
   gaia-degauss:
