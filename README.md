@@ -73,6 +73,16 @@ It is likely the gaia-core container will run, but RStudio login will fail on Ma
 git clone git@github.com:OHDSI/gaiaDocker.git
 ```
 
+- Before starting gaiaDocker containers, you must authenticate to GitHub Container Registry (GHCR). This step is required to access the osgeo/gdal image. Detailed instructions [here](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry#authenticating-to-the-container-registry). Basic steps for authenticating in a command line / terminal window with a Personal Access Token (PAT) below:
+```shell
+# Create a GitHub PAT with read:packages scope in order to authenticate
+export CR_PAT=YOUR_TOKEN
+
+echo $CR_PAT | docker login ghcr.io -u USERNAME --password-stdin
+
+# > Login Succeeded
+```
+
 - In a command line / terminal window - navigate to the directory where this README.md file is located and start the gaia Docker Containers using the below command. On Linux you may need to use 'sudo' to run this command.
 
 ```shell
