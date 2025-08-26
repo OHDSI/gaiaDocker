@@ -16,8 +16,13 @@ RUN apk update && apk add \
 USER $USER
 WORKDIR /app
 
-# Copy api script
+# Copy api scripts
 COPY --chown=$USER:$USER --chmod=0500 ./api/api.sh .
+COPY --chown=$USER:$USER --chmod=0500 ./api/check_table_exists.sh .
+COPY --chown=$USER:$USER --chmod=0500 ./api/get_public_tables.sh .
+COPY --chown=$USER:$USER --chmod=0500 ./api/load_variable.sh .
+COPY --chown=$USER:$USER --chmod=0500 ./api/get_loaded_variables_for_table.sh .
+
 
 # copy the init script
 COPY --chown=$USER:$USER --chmod=777 ./gaia-postgis/init.sh .
