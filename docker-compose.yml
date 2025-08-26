@@ -116,11 +116,12 @@ services:
       POSTGRES_DB: ${GAIA_PG_DB}
       POSTGRES_PASSWORD_FILE: /run/secrets/GAIA_PG_PASSWORD
       POSTGRES_PORT: 5432
-    # command: tail -f /dev/null
+    #entrypoint: tail -f /dev/null
     ports:
       - "${GAIA_POSTGIS_API_PORT}:${GAIA_POSTGIS_API_PORT}"
     volumes:
       - ../gaiaCatalog/datastore/data:/data
+      - ./volumes/temp:/temp
 
   gaia-osgeo:
     profiles: [ "gaia" ]
@@ -145,6 +146,7 @@ services:
       - "${GAIA_OSGEO_API_PORT}:${GAIA_OSGEO_API_PORT}"
     volumes:
       - ../gaiaCatalog/datastore/data:/data
+      - ./volumes/temp:/temp
 
   gaia-gdsc:
     profiles: [ "gaia" ]
@@ -165,6 +167,7 @@ services:
       - "${GAIA_GDSC_API_PORT}:${GAIA_GDSC_API_PORT}"
     volumes:
       - ../gaiaCatalog/datastore/data:/data
+      - ./volumes/temp:/temp
     # command: tail -f /dev/null
 
   gaia-git:
@@ -184,6 +187,7 @@ services:
       - "${GAIA_GIT_API_PORT}:${GAIA_GIT_API_PORT}"
     volumes:
       - ../gaiaCatalog/datastore/data:/data
+      - ./volumes/temp:/temp
     # entrypoint: ["sh", "-c", "sleep 9999"]
 
   gaia-degauss:
