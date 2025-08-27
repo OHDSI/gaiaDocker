@@ -87,7 +87,7 @@ echo $CR_PAT | docker login ghcr.io -u USERNAME --password-stdin
 
 ### gaiaCatalog - Quick start
 
-In the sme parent directory as the gaiaDocker repository, run the following command:
+In the same parent directory as the gaiaDocker repository, run the following command:
 
 ```shell
 git clone git@github.com:OHDSI/gaiaCatalog.git
