@@ -54,6 +54,8 @@ Throughout this README, we will show docker compose commands with the convention
 - Git
 - Chromium-based web browser (Chrome, Edge, etc.)
 
+You also need the gaiaCatalog github repository cloned into the same parent folder as the gaiaDocker repository. See instructions below.
+
 ### Secrets  
 
 All secrets are in the top-level secrets folder. For gaiaDocker there is a gaia subfolder with gaia specific secrets. Note that syou should change your internal secrets (postgres, internal API, etc) and that you will need to provide your own external API secrets (Copernicus, Census, Earth Explorer, and so on).  
@@ -83,6 +85,25 @@ echo $CR_PAT | docker login ghcr.io -u USERNAME --password-stdin
 # > Login Succeeded
 ```
 
+### gaiaCatalog - Quick start
+
+In the sme parent directory as the gaiaDocker repository, run the following command:
+
+```shell
+git clone git@github.com:OHDSI/gaiaCatalog.git
+```
+
+the resulting structure should look like this:
+
+```
+.
++-- parentDirectory
+|   --- gaiaDocker
+|   --- gaiaCatalog
+```
+
+### Starting the docker fleet
+
 - In a command line / terminal window - navigate to the directory where this README.md file is located and start the gaia Docker Containers using the below command. On Linux you may need to use 'sudo' to run this command.
 
 ```shell
@@ -107,6 +128,38 @@ docker-compose --profile gaia up -d
 - In the gaia-solr (localhost:8983) you can explore the two indexes (collections and dcat). The dcat collection is the index for the data layers.
 - In the gaia-core (localhost:8787) you can login as user:ohdsi with pass:mypass to run RStudio with the geospatial extensions loaded (windows only)
 - You can connect to the gaia-db with a postgres client like PGAdmin or QGIS with host:localhost, port:5433, database:gaiaDB, user:postgres, pass:SuperSecret
+
+## Updating the postGIS database and / or the SOLR-based catalog
+
+Both the postGIS database and SOLR-based catalog will persist on your local machine when docker is stopped or the machine powers off. In any case, sometimes it will be necessary to reset the PostGIS database and / or the SOLR index for the catalog.
+
+### Reset the postGIS database
+
+To reset the postGIS database it is easiest to rebuild the gaia-db docker image and the gaia-db docker volumne. To do this navigate to the gaiaDocker directory in a command line / terminal window and run:
+
+```shell
+docker-compose --profile gaia down
+docker image rm gaia-db
+docker volume rm gaia-db
+docker-compose --profile gaia up -d
+```
+
+### Update Catalog Entries
+
+You can update the catalog entires by pulling new json files from the gaiaCatalog repository. In a command line / terminal window navigate to the gaiaCatalog directory and run:
+
+```shell
+git pull origin main
+```
+
+This updates the json files used as the source of truth for the catalog. NOTE: once the json is updated, the SOLR index must also be updated. The easiest way to do this is to navigate to the gaiaDocker directory in a command line / terminal window and rebuild the gaia-solr docker image and gaia-solr docker volume as follows:
+
+```shell
+docker-compose --profile gaia down
+docker image rm gaia-solr
+docker volume rm gaia-solr
+docker-compose --profile gaia up -d
+```
 
 ## gaiaDocker - Quick end  
 
