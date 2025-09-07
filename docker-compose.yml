@@ -134,7 +134,11 @@ services:
     secrets:
       - GAIA_X_API_KEY
       - GAIA_PG_PASSWORD
+      - USGS_USER
+      - USGS_PASSWORD
     environment:
+      USGS_USER_FILE: /run/secrets/USGS_USER
+      USGS_PASSWORD_FILE: /run/secrets/USGS_PASSWORD
       GAIA_X_API_KEY_FILE: /run/secrets/GAIA_X_API_KEY
       GAIA_OSGEO_API_PORT: ${GAIA_OSGEO_API_PORT}
       POSTGRES_USER: ${GAIA_PG_USER}
@@ -146,6 +150,7 @@ services:
       - "${GAIA_OSGEO_API_PORT}:${GAIA_OSGEO_API_PORT}"
     volumes:
       - ../gaiaCatalog/datastore/data:/data
+      - ../gaiaCatalog/datastore/collections:/collections
       - ./volumes/temp:/temp
 
   gaia-gdsc:
@@ -214,6 +219,8 @@ secrets:
     file: ${GAIA_X_API_KEY_FILE}
   COPERNICUS_KEY:
     file: ${GAIA_COPERNICUS_KEY_FILE}
+  USGS_USER:
+    file: ${GAIA_USGS_USER_FILE}
+  USGS_PASSWORD:
+    file: ${GAIA_USGS_PASSWORD_FILE}
 
-
-  
