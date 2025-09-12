@@ -8,7 +8,7 @@ ENV UID=1001
 RUN apt-get update && apt-get install -y \
     vim ucspi-tcp p7zip-full && \
     rm -rf /var/lib/apt/lists/* && \
-    useradd -u "$UID" $USER
+    useradd -m -u "$UID" $USER
 
 # Change to non-root user and set working directory
 USER $USER
