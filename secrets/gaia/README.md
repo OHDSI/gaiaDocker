@@ -21,11 +21,11 @@ The catalog uses APIs to retrieve data, including APIs with account authenticati
       url: https://cds.climate.copernicus.eu/api
       key: <your copernicus key here>
       ```
-   - Then save the key file as "COPERNICUS_KEY" in this directory.
+   - Then save the key file as COPERNICUS_KEY in this directory.
 
 - __United States Geological Survey (USGS) [https://ers.cr.usgs.gov/login](https://ers.cr.usgs.gov/login)__. 
    - Create new account (bottom of left column)
-   - You will use your username and password saved in two files in this directory for authentication (note the newline at the end of the files).
+   - You will use your username and password saved in two files in this directory for authentication (note the newline at the end of the files).  
 	  USGS_USER
       ```
       <your USGS usesrname here>
