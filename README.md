@@ -1,4 +1,5 @@
 
+
 # gaiaDocker
 
 ## Introduction
@@ -61,7 +62,7 @@ You also need the gaiaCatalog github repository cloned into the same parent fold
 
 All secrets are in the top-level secrets folder. For gaiaDocker there is a gaia subfolder with gaia specific secrets. Note that syou should change your internal secrets (postgres, internal API, etc) and that you will need to provide your own external API secrets (Copernicus, Census, Earth Explorer, and so on).  
 
-For API keys see the README.md in the secrets/gaia directory.
+For API keys see the [README.md](secrets/gaia/README.md) in the secrets/gaia directory of this repository.
 
 ### Mac Silicon  
 
