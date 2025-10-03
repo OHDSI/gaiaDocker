@@ -1,3 +1,4 @@
+
 # gaiaDocker
 
 ## Introduction
@@ -60,6 +61,8 @@ You also need the gaiaCatalog github repository cloned into the same parent fold
 
 All secrets are in the top-level secrets folder. For gaiaDocker there is a gaia subfolder with gaia specific secrets. Note that syou should change your internal secrets (postgres, internal API, etc) and that you will need to provide your own external API secrets (Copernicus, Census, Earth Explorer, and so on).  
 
+For API keys see the README.md in the secrets/gaia directory.
+
 ### Mac Silicon  
 
 If using Mac Silicon (M1, M2, etc), you **may** need to set the DOCKER_ARCH variable in Section 1 of the .env file to "linux/arm64" (line 5). Some Broadsea services still need to run via emulation of linux/amd64 and are hard-coded as such.  
@@ -68,22 +71,28 @@ It is likely the gaia-core container will run, but RStudio login will fail on Ma
 
 ## gaiaDocker - Quick start  
 
-- Download and install Docker. See the installation instructions at the [Docker Web Site](https://docs.docker.com/engine/installation/ "Install Docker")
+- Download and install Docker. 
+   - Windows: See the installation instructions for Docker Desktop at the [Docker Web Site](https://docs.docker.com/desktop/setup/install/windows-install/ "Install Docker PC")
+      NOTE: you will have to either install WSL or Hyper-V. This repo has been tested on WSL.
+   - Apple: See the installation instructions for Docker Desktop at the [Docker Web Site](https://docs.docker.com/desktop/setup/install/mac-install/ "Install Docker Mac")
+      NOTE: you can also use Colima (from your shell/terminal)
+      - first install homebrew:
+         $ `/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"`
+      - then install colima:
+         $ `brew install colima`
+         
 - git clone this GitHub repo:
-
-```shell
-git clone git@github.com:OHDSI/gaiaDocker.git
-```
+	` git clone git@github.com:OHDSI/gaiaDocker.git`
 
 - Before starting gaiaDocker containers, you must authenticate to GitHub Container Registry (GHCR). This step is required to access the osgeo/gdal image. Detailed instructions [here](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry#authenticating-to-the-container-registry). Basic steps for authenticating in a command line / terminal window with a Personal Access Token (PAT) below:
-```shell
-# Create a GitHub PAT with read:packages scope in order to authenticate
-export CR_PAT=YOUR_TOKEN
+	```shell
+	# Create a GitHub PAT with read:packages scope in order to authenticate (see above instructions)
+	
+	export CR_PAT=YOUR_TOKEN
+	echo $CR_PAT | docker login ghcr.io -u USERNAME --password-stdin
 
-echo $CR_PAT | docker login ghcr.io -u USERNAME --password-stdin
-
-# > Login Succeeded
-```
+	# > Login Succeeded
+	```
 
 ### gaiaCatalog - Quick start
 
@@ -106,16 +115,16 @@ the resulting structure should look like this:
 
 - In a command line / terminal window - navigate to the directory where this README.md file is located and start the gaia Docker Containers using the below command. On Linux you may need to use 'sudo' to run this command.
 
-```shell
-docker compose --profile gaia up -d
-```
+	```shell
+	docker compose --profile gaia up -d
+	```
 
---or--  
+	--or--  
 
 
-```shell
-docker-compose --profile gaia up -d
-```
+	```shell
+	docker-compose --profile gaia up -d
+	```
 
 ### Build Notes:  
 
@@ -165,13 +174,13 @@ docker-compose --profile gaia up -d
 
 - In the directory where this README.md is located, in a command line / terminal window, use the below command to terminate the containers.  
 
-```shell
-docker compose --profile gaia down
-```
+	```shell
+	docker compose --profile gaia down
+	```
 
---or--  
+	--or--  
 
 
-```shell
-docker-compose --profile gaia down
-```
+	```shell
+	docker-compose --profile gaia down
+	```
