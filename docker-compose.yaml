@@ -76,7 +76,7 @@ services:
       GAIA_GIT_API_PORT: ${GAIA_GIT_API_PORT}
       GAIA_GDSC_API_PORT: ${GAIA_GDSC_API_PORT}
     ports:
-      - "${GAIA_CATALOG_API_PORT}:${GAIA_CATALOG_API_PORT}"
+      - "${GAIA_CATALOG_API_PORT}:5000"
     depends_on:
       - gaia-solr
     #entrypoint: ["tail","-f","/dev/null"]
@@ -93,7 +93,7 @@ services:
     image: gaia-solr
     restart: unless-stopped
     ports:
-      - "${GAIA_SOLR_API_PORT}:${GAIA_SOLR_API_PORT}"
+      - "${GAIA_SOLR_API_PORT}:8983"
     volumes:
       - ../gaiaCatalog/datastore:/catalog
       - gaia-solr:/var/solr
