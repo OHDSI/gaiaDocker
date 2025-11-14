@@ -57,6 +57,29 @@ services:
     - "${GAIA_PG_LOCALHOST_PORT}:5432"
     volumes:
       - gaia-db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${GAIA_PG_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  gaia-postgrest:
+    profiles: [ "gaia" ]
+    image: postgrest/postgrest:latest
+    container_name: gaia-postgrest
+    restart: unless-stopped
+    environment:
+      PGRST_DB_URI: postgresql://${GAIA_PG_USER}@gaia-db:5432/${GAIA_PG_DB}
+      PGRST_DB_SCHEMAS: backbone,working
+      PGRST_DB_ANON_ROLE: ${GAIA_PG_USER}
+      PGRST_SERVER_PORT: ${GAIA_POSTGREST_API_PORT}
+      PGRST_OPENAPI_MODE: follow-privileges
+      PGRST_DB_MAX_ROWS: 1000
+    ports:
+      - "${GAIA_POSTGREST_API_PORT}:${GAIA_POSTGREST_API_PORT}"
+    depends_on:
+      gaia-db:
+        condition: service_healthy
 
   gaia-catalog:
     profiles: [ "gaia" ]
