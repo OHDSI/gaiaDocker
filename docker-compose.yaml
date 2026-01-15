@@ -39,7 +39,7 @@ services:
       - "traefik.enable=true"
 
   gaia-db:
-    profiles: [ "gaia" ]
+    profiles: [ "gaia","gaia-db" ]
     image: gaia-db
     build:
       context: ${GAIA_DB_GITHUB_URL}
@@ -48,15 +48,20 @@ services:
     restart: unless-stopped
     secrets:
       - GAIA_PG_PASSWORD
+      - GAIA_AUTHENTICATOR_PASSWORD
     environment:
       POSTGRES_USER: ${GAIA_PG_USER}
       POSTGRES_DB: ${GAIA_PG_DB}
       POSTGRES_PASSWORD_FILE: /run/secrets/GAIA_PG_PASSWORD
+      PG_PASSWORD_FILE: /run/secrets/GAIA_PG_PASSWORD
+      AUTHENTICATOR_PASSWORD_FILE: /run/secrets/GAIA_AUTHENTICATOR_PASSWORD
       POSTGRES_PORT: 5432
+    user: "postgres:postgres"
     ports:
     - "${GAIA_PG_LOCALHOST_PORT}:5432"
     volumes:
       - gaia-db:/var/lib/postgresql/data
+      - ../gaiaCatalog/datastore/data:/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${GAIA_PG_USER}"]
       interval: 10s
@@ -65,16 +70,24 @@ services:
 
   gaia-postgrest:
     profiles: [ "gaia" ]
-    image: postgrest/postgrest:latest
+    image: gaia-postgrest
+    build:
+      context: ./docker/
+      dockerfile: ./gaia-postgrest/Dockerfile
     container_name: gaia-postgrest
     restart: unless-stopped
+    secrets:
+      - GAIA_PG_PASSWORD
     environment:
-      PGRST_DB_URI: postgresql://${GAIA_PG_USER}@gaia-db:5432/${GAIA_PG_DB}
-      PGRST_DB_SCHEMAS: backbone,working
-      PGRST_DB_ANON_ROLE: ${GAIA_PG_USER}
+      POSTGRES_USER: ${GAIA_PG_USER}
+      POSTGRES_PASSWORD_FILE: /run/secrets/GAIA_PG_PASSWORD
+      POSTGRES_DB: ${GAIA_PG_DB}
+      PGRST_DB_SCHEMAS: backbone,public,working,vocabulary
+      PGRST_DB_ANON_ROLE: web_anon
       PGRST_SERVER_PORT: ${GAIA_POSTGREST_API_PORT}
-      PGRST_OPENAPI_MODE: follow-privileges
-      PGRST_DB_MAX_ROWS: 1000
+      PGRST_OPENAPI_SERVER_PROXY_URI: http://127.0.0.1:${GAIA_POSTGREST_API_PORT}
+      #PGRST_OPENAPI_MODE: follow-privileges
+      #PGRST_DB_MAX_ROWS: 1000
     ports:
       - "${GAIA_POSTGREST_API_PORT}:${GAIA_POSTGREST_API_PORT}"
     depends_on:
@@ -98,6 +111,8 @@ services:
       GAIA_OSGEO_API_PORT: ${GAIA_OSGEO_API_PORT}
       GAIA_GIT_API_PORT: ${GAIA_GIT_API_PORT}
       GAIA_GDSC_API_PORT: ${GAIA_GDSC_API_PORT}
+      GAIA_CATALOG_FLAVOR: ${GAIA_CATALOG_FLAVOR}
+      GAIA_POSTGREST_API_PORT: ${GAIA_POSTGREST_API_PORT}
     ports:
       - "${GAIA_CATALOG_API_PORT}:5000"
     depends_on:
@@ -238,6 +253,8 @@ secrets:
     file: ${HADES_PASSWORD_FILE}
   GAIA_PG_PASSWORD:
     file: ${GAIA_PG_PASSWORD_FILE}
+  GAIA_AUTHENTICATOR_PASSWORD:
+    file: ${GAIA_AUTHENTICATOR_PASSWORD_FILE}
   GAIA_X_API_KEY:
     file: ${GAIA_X_API_KEY_FILE}
   COPERNICUS_KEY:
