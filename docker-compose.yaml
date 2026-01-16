@@ -46,17 +46,15 @@ services:
       dockerfile: ./Dockerfile
     container_name: gaia-db
     restart: unless-stopped
-    secrets:
-      - GAIA_PG_PASSWORD
     environment:
       POSTGRES_USER: ${GAIA_PG_USER}
       POSTGRES_DB: ${GAIA_PG_DB}
-      POSTGRES_PASSWORD_FILE: /run/secrets/GAIA_PG_PASSWORD
+      POSTGRES_PASSWORD: ${GAIA_PG_PASSWORD}
       POSTGRES_PORT: 5432
     ports:
     - "${GAIA_PG_LOCALHOST_PORT}:5432"
-    volumes:
-      - gaia-db:/var/lib/postgresql/data
+#    volumes:
+#      - gaia-db:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${GAIA_PG_USER}"]
       interval: 10s
@@ -69,7 +67,7 @@ services:
     container_name: gaia-postgrest
     restart: unless-stopped
     environment:
-      PGRST_DB_URI: postgresql://${GAIA_PG_USER}@gaia-db:5432/${GAIA_PG_DB}
+      PGRST_DB_URI: "postgres://${GAIA_PG_USER}:${GAIA_PG_PASSWORD}@gaia-db/gaiaDB"
       PGRST_DB_SCHEMAS: backbone,working
       PGRST_DB_ANON_ROLE: ${GAIA_PG_USER}
       PGRST_SERVER_PORT: ${GAIA_POSTGREST_API_PORT}
