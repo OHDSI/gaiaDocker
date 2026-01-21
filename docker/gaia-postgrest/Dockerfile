@@ -1,8 +1,9 @@
 FROM postgrest/postgrest:latest
 
-WORKDIR /init
-
 # copy the init script
-COPY --chmod=777 ./gaia-postgrest/init.sh .
+USER root
+COPY --chmod=777 ./gaia-postgrest/init.sh /init.sh
 
-ENTRYPOINT ["./init.sh"]
+# run as 1000
+USER 1000
+ENTRYPOINT /init.sh
