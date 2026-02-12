@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # set the postgrest uri with user and pass
 export POSTGRES_PASSWORD=$(cat $POSTGRES_PASSWORD_FILE)
