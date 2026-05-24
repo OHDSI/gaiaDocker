@@ -11,7 +11,7 @@ volumes:
 services:
 
   gaia-core: # built from hades image
-    profiles: [ "gaia" ]
+    profiles: [ "gaia-core" ]
     image: gaia-core
     build:
       context: ${GAIA_CORE_GITHUB_URL}
@@ -39,7 +39,7 @@ services:
       - "traefik.enable=true"
 
   gaia-db:
-    profiles: [ "gaia","gaia-db" ]
+    profiles: [ "gaia", "gaia-db", "gaia-tcp-api" ]
     image: gaia-db
     build:
       context: ${GAIA_DB_GITHUB_URL}
@@ -95,6 +95,7 @@ services:
       gaia-db:
         condition: service_healthy
 
+  # one version for the postgrest API
   gaia-catalog:
     profiles: [ "gaia" ]
     image: gaia-catalog
@@ -112,7 +113,36 @@ services:
       GAIA_OSGEO_API_PORT: ${GAIA_OSGEO_API_PORT}
       GAIA_GIT_API_PORT: ${GAIA_GIT_API_PORT}
       GAIA_GDSC_API_PORT: ${GAIA_GDSC_API_PORT}
-      GAIA_CATALOG_FLAVOR: ${GAIA_CATALOG_FLAVOR}
+      GAIA_CATALOG_FLAVOR: gdsc-pg
+      GAIA_POSTGREST_API_PORT: ${GAIA_POSTGREST_API_PORT}
+    ports:
+      - "${GAIA_CATALOG_API_PORT}:5000"
+    depends_on:
+      - gaia-solr
+    #entrypoint: ["tail","-f","/dev/null"]
+    entrypoint: sh -c "sleep 15 && python ohdsi.py"
+    volumes:
+      - ../gaiaCatalog/datastore/data:/data
+
+  # second version for the tcp-based API
+  gaia-catalog:
+    profiles: [ "gaia-tcp-api" ]
+    image: gaia-catalog
+    # user: root
+    build: 
+      context: ${GAIA_CATALOG_GITHUB_URL}
+      dockerfile: ./docker/repository/Dockerfile
+    container_name: gaia-catalog
+    restart: unless-stopped
+    secrets:
+      - GAIA_X_API_KEY
+    environment:
+      GAIA_X_API_KEY_FILE: /run/secrets/GAIA_X_API_KEY
+      GAIA_POSTGIS_API_PORT: ${GAIA_POSTGIS_API_PORT}
+      GAIA_OSGEO_API_PORT: ${GAIA_OSGEO_API_PORT}
+      GAIA_GIT_API_PORT: ${GAIA_GIT_API_PORT}
+      GAIA_GDSC_API_PORT: ${GAIA_GDSC_API_PORT}
+      GAIA_CATALOG_FLAVOR: gdsc-api
       GAIA_POSTGREST_API_PORT: ${GAIA_POSTGREST_API_PORT}
     ports:
       - "${GAIA_CATALOG_API_PORT}:5000"
@@ -124,7 +154,7 @@ services:
       - ../gaiaCatalog/datastore/data:/data
 
   gaia-solr:
-    profiles: [ "gaia" ]
+    profiles: [ "gaia", "gaia-tcp-api" ]
     container_name: gaia-solr
     build: 
       context: ${GAIA_CATALOG_GITHUB_URL}
@@ -138,7 +168,7 @@ services:
       - gaia-solr:/var/solr
 
   gaia-postgis:
-    profiles: [ "gaia" ]
+    profiles: [ "gaia-tcp-api" ]
     image: gaia-postgis
     platform: linux/amd64
     build:
@@ -164,7 +194,7 @@ services:
       - ./volumes/temp:/temp
 
   gaia-osgeo:
-    profiles: [ "gaia" ]
+    profiles: [ "gaia-tcp-api" ]
     image: gaia-osgeo
     build:
       context: ./docker/
@@ -194,7 +224,7 @@ services:
       - ./volumes/temp:/temp
 
   gaia-gdsc:
-    profiles: [ "gaia" ]
+    profiles: [ "gaia-tcp-api" ]
     container_name: gaia-gdsc
     build: 
       context: ./docker/
@@ -217,7 +247,7 @@ services:
     # command: tail -f /dev/null
 
   gaia-git:
-    profiles: [ "gaia" ]
+    profiles: [ "gaia-tcp-api" ]
     container_name: gaia-git
     build: 
       context: ./docker/

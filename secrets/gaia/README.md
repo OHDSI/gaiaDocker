@@ -12,7 +12,7 @@ NOTE: this list does not include other keys that should be changed in the OHDSI 
 
 ### External APIs with authentication:
 
-The catalog uses APIs to retrieve data, including APIs with account authentication. Currently we have the following list of APIs with authentication needs.
+The catalog uses APIs to retrieve data, including APIs with account authentication. Currently we have the following list of APIs with authentication needs. The keys that ship with the repository are _**fake**_ and must be replaced with your authentication information for the dataset retrieval to work from the following agencies and institutions.
 
 - __Copernicus Climate Data Store [https://cds.climate.copernicus.eu/](https://cds.climate.copernicus.eu/).__
    - Sign up for an account (top right of page)
