@@ -28,4 +28,5 @@ COPY --chown=$USER:$USER --chmod=0500 ./api/api.sh .
 # copy the init script
 COPY --chown=$USER:$USER --chmod=777 ./gaia-gdsc/init.sh .
 
-ENTRYPOINT ./init.sh
+ENTRYPOINT ["/app/init.sh"]
+CMD ["tail","-f","/dev/null"]

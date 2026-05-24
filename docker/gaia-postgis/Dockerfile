@@ -27,3 +27,4 @@ COPY --chown=$USER:$USER --chmod=0500 ./api/gdsc_path_and_dependencies.sh .
 COPY --chown=$USER:$USER --chmod=777 ./gaia-postgis/init.sh .
 
 ENTRYPOINT ["/app/init.sh"]
+CMD ["tail","-f","/dev/null"]

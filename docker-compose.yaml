@@ -54,6 +54,7 @@ services:
       POSTGRES_DB: ${GAIA_PG_DB}
       POSTGRES_PASSWORD_FILE: /run/secrets/GAIA_PG_PASSWORD
       PG_PASSWORD_FILE: /run/secrets/GAIA_PG_PASSWORD
+      INIT_WITH_DATASOURCE_MOUNT: TRUE
       AUTHENTICATOR_PASSWORD_FILE: /run/secrets/GAIA_AUTHENTICATOR_PASSWORD
       POSTGRES_PORT: 5432
     user: "postgres:postgres"
@@ -139,6 +140,7 @@ services:
   gaia-postgis:
     profiles: [ "gaia" ]
     image: gaia-postgis
+    platform: linux/amd64
     build:
       context: ./docker/
       dockerfile: ./gaia-postgis/Dockerfile
@@ -154,7 +156,7 @@ services:
       POSTGRES_DB: ${GAIA_PG_DB}
       POSTGRES_PASSWORD_FILE: /run/secrets/GAIA_PG_PASSWORD
       POSTGRES_PORT: 5432
-    #entrypoint: tail -f /dev/null
+    command: ["tcpserver","0.0.0.0","${GAIA_POSTGIS_API_PORT}","./api.sh"]
     ports:
       - "${GAIA_POSTGIS_API_PORT}:${GAIA_POSTGIS_API_PORT}"
     volumes:
@@ -183,7 +185,7 @@ services:
       POSTGRES_DB: ${GAIA_PG_DB}
       POSTGRES_PASSWORD_FILE: /run/secrets/GAIA_PG_PASSWORD
       POSTGRES_PORT: 5432
-    # command: tail -f /dev/null
+    command: ["tcpserver","0.0.0.0","${GAIA_OSGEO_API_PORT}","./api.sh"]
     ports:
       - "${GAIA_OSGEO_API_PORT}:${GAIA_OSGEO_API_PORT}"
     volumes:
@@ -206,6 +208,7 @@ services:
       GAIA_X_API_KEY_FILE: /run/secrets/GAIA_X_API_KEY
       GAIA_COPERNICUS_KEY_FILE: /run/secrets/COPERNICUS_KEY
       GAIA_GDSC_API_PORT: ${GAIA_GDSC_API_PORT}
+    command: ["tcpserver","0.0.0.0","${GAIA_GDSC_API_PORT}","./api.sh"]
     ports:
       - "${GAIA_GDSC_API_PORT}:${GAIA_GDSC_API_PORT}"
     volumes:
@@ -226,6 +229,7 @@ services:
     environment:
       GAIA_X_API_KEY_FILE: /run/secrets/GAIA_X_API_KEY
       GAIA_GIT_API_PORT: ${GAIA_GIT_API_PORT}
+    command: ["tcpserver","0.0.0.0","${GAIA_GIT_API_PORT}","./api.sh"]
     ports:
       - "${GAIA_GIT_API_PORT}:${GAIA_GIT_API_PORT}"
     volumes:

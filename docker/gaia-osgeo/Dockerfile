@@ -21,3 +21,4 @@ COPY --chown=$USER:$USER --chmod=0500 ./api/api.sh .
 COPY --chown=$USER:$USER --chmod=777 ./gaia-osgeo/init.sh .
 
 ENTRYPOINT ["/app/init.sh"]
+CMD ["tail","-f","/dev/null"]
