@@ -6,7 +6,7 @@ ENV UID=1001
 
 # Install basic web server tools and create non-root user
 RUN apt-get update && apt-get install -y \
-    vim ucspi-tcp p7zip-full && \
+    vim ucspi-tcp p7zip-full wget curl && \
     rm -rf /var/lib/apt/lists/* && \
     useradd -m -u "$UID" $USER
 
