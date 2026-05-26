@@ -87,7 +87,7 @@ services:
       PGRST_DB_ANON_ROLE: web_anon
       PGRST_SERVER_PORT: ${GAIA_POSTGREST_API_PORT}
       PGRST_OPENAPI_SERVER_PROXY_URI: http://127.0.0.1:${GAIA_POSTGREST_API_PORT}
-      #PGRST_OPENAPI_MODE: follow-privileges
+      #PGRST_OPENAPI_MODE: follow-privileges #
       #PGRST_DB_MAX_ROWS: 1000
     ports:
       - "${GAIA_POSTGREST_API_PORT}:${GAIA_POSTGREST_API_PORT}"
@@ -95,8 +95,8 @@ services:
       gaia-db:
         condition: service_healthy
 
-  # one version for the postgrest API
-  gaia-catalog:
+  # one gaia-catalog version for the postgrest API
+  gaia-catalog-pg:
     profiles: [ "gaia" ]
     image: gaia-catalog
     # user: root
@@ -119,13 +119,14 @@ services:
       - "${GAIA_CATALOG_API_PORT}:5000"
     depends_on:
       - gaia-solr
-    #entrypoint: ["tail","-f","/dev/null"]
-    entrypoint: sh -c "sleep 15 && python ohdsi.py"
+    #entrypoint: ["tail","-f","/dev/null"] # for development
+    entrypoint: ["sh", "-c", "sleep 15 && python ohdsi.py"]
     volumes:
       - ../gaiaCatalog/datastore/data:/data
+      #- ../gaiaCatalog/docker/repository:/ohdsi # for development
 
-  # second version for the tcp-based API
-  gaia-catalog:
+  # second gaia-catalog version for the tcp-based API
+  gaia-catalog-tcp:
     profiles: [ "gaia-tcp-api" ]
     image: gaia-catalog
     # user: root
@@ -148,10 +149,11 @@ services:
       - "${GAIA_CATALOG_API_PORT}:5000"
     depends_on:
       - gaia-solr
-    #entrypoint: ["tail","-f","/dev/null"]
+    #entrypoint: ["tail","-f","/dev/null"] # for development
     entrypoint: sh -c "sleep 15 && python ohdsi.py"
     volumes:
       - ../gaiaCatalog/datastore/data:/data
+      #- ../gaiaCatalog/docker/repository:/ohdsi # for development
 
   gaia-solr:
     profiles: [ "gaia", "gaia-tcp-api" ]
@@ -244,7 +246,7 @@ services:
     volumes:
       - ../gaiaCatalog/datastore/data:/data
       - ./volumes/temp:/temp
-    # command: tail -f /dev/null
+    # command: tail -f /dev/null # for development
 
   gaia-git:
     profiles: [ "gaia-tcp-api" ]
@@ -265,7 +267,7 @@ services:
     volumes:
       - ../gaiaCatalog/datastore/data:/data
       - ./volumes/temp:/temp
-    # entrypoint: ["sh", "-c", "sleep 9999"]
+    # entrypoint: ["sh", "-c", "sleep 9999"] # for development
 
   gaia-degauss:
     profiles: [ "degauss" ]
@@ -274,7 +276,7 @@ services:
       context: ${GAIA_DEGAUSS_GITHUB_URL}
     image: gaia-degauss
     restart: unless-stopped
-    #entrypoint: ["bash", "-c", "sleep 9999"]
+    #entrypoint: ["bash", "-c", "sleep 9999"] # for development
     entrypoint: ["Rscript","degauss.R"]
     command: []
     environment:
