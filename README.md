@@ -57,7 +57,7 @@ echo $CR_PAT | docker login ghcr.io -u USERNAME --password-stdin
 
 ### gaiaDocker
 
-Run the following script in your shell to gether thre three required components of the OHDSI gaia project and build the gaia-db and gaia-catalog containers.
+Run the following script in your shell to gather the three required components of the OHDSI gaiaDocker project and build the gaia-db and gaia-catalog containers.
 
 ```shell
 git clone git@github.com:OHDSI/gaiaDocker.git
