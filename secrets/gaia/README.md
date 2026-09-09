@@ -14,7 +14,7 @@ NOTE: this list does not include other keys that should be changed in the OHDSI 
 
 The catalog uses APIs to retrieve data, including APIs with account authentication. Currently we have the following list of APIs with authentication needs. The keys that ship with the repository are _**fake**_ and must be replaced with your authentication information for the dataset retrieval to work from the following agencies and institutions.
 
-- __Copernicus Climate Data Store [https://cds.climate.copernicus.eu/](https://cds.climate.copernicus.eu/).__
+- __Copernicus Climate Data Store Authenticated API Access [https://cds.climate.copernicus.eu/](https://cds.climate.copernicus.eu/).__
    - Sign up for an account (top right of page)
    - Once you are logged in follow the [instructions](https://cds.climate.copernicus.eu/how-to-api) on how to create the API key. In the end it will look like this:
       ```
@@ -23,7 +23,7 @@ The catalog uses APIs to retrieve data, including APIs with account authenticati
       ```
    - Then save the key file as COPERNICUS_KEY in this directory.
 
-- __United States Geological Survey (USGS) [https://ers.cr.usgs.gov/login](https://ers.cr.usgs.gov/login)__. 
+- __United States Geological Survey (USGS)  Authenticated Downloads [https://ers.cr.usgs.gov/login](https://ers.cr.usgs.gov/login)__. 
    - Create new account (bottom of left column)
    - You will use your username and password saved in two files in this directory for authentication (note the newline at the end of the files).  
    
@@ -37,3 +37,35 @@ The catalog uses APIs to retrieve data, including APIs with account authenticati
       <your USGS password here>
       
       ```
+
+- __United States Center for Disease Control (CDC) Socrata Endpoint [https://data.cdc.gov/](https://data.cdc.gov/)__
+   - create an account (Tyler Data and Insights ID)
+   - login and locate and edit "Your Profile"
+   - go to developer settings and create new App Token
+   - copy the token and save it in this directory as:
+
+   CDC_APP_TOKEN
+   ```
+   <your app token here>
+   ```
+
+- __AirNow API [https://docs.airnowapi.org/](https://docs.airnowapi.org/)__
+   - click "Login" and "Request an AirNow API account"
+   - login and click the "Web Services" tab header
+   - your API key will appear at the top right
+   - copy theAPI key and save it in this directory as:
+
+   AIRNOW_API_KEY
+   ```
+   <your API key here>
+   ```
+
+- __United States Census Bureau API [https://www.census.gov/data/developers/data-sets.html/](https://www.census.gov/data/developers/data-sets.html)__
+   - click "Request a KEY" (big button on lower left)
+   - follow the instructions
+   - copy theAPI key and save it in this directory as:
+
+   CENSUS_API_KEY
+   ```
+   <your API key here>
+   ```
