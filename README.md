@@ -79,6 +79,21 @@ It is likely the gaia-core container will run, but RStudio login will fail on Ma
 
 ## Quick Start
 
+Before running docker compose for the first time we must create empty secret files or create accounts for authentication (see the [README](secrets/gaia/README.md) in the ./secrets/gaia directory). To start without secrets you must create empty secrets with the create_secrets script.
+
+#### macOS/linux
+
+```shell
+bash create_secrets.sh # you only need to run this once to create blank secrets
+```
+
+#### windows
+
+```shell
+./create_secrets.ps1
+```
+
+
 ```shell
 cd ./gaiaDocker
 docker compose --profile gaia up -d

@@ -7,21 +7,25 @@ The GaiaDocker stack includes various secrets that can be grouped into two categ
 You should change the following secrets from their defaults:
 - GAIA_X_API_KEY
 - POSTGRES_PASSWORD
+- AUTHENTICATOR_PASSWORD
 
 NOTE: this list does not include other keys that should be changed in the OHDSI Broadsea implementation.
 
 ### External APIs with authentication:
 
-The catalog uses APIs to retrieve data, including APIs with account authentication. Currently we have the following list of APIs with authentication needs. The keys that ship with the repository are _**fake**_ and must be replaced with your authentication information for the dataset retrieval to work from the following agencies and institutions.
+The catalog uses APIs to retrieve data, including APIs with account authentication. Currently we have the following list of APIs with authentication needs. The keys do not ship with the repository, but you can run the top level script:
+```
+bash create_secrets.sh
+```
+to create _**blanks**_ so that docker-compose can run. These blank keys must be replaced with your authentication information for the dataset retrieval to work from the following agencies and institutions.
 
 - __Copernicus Climate Data Store Authenticated API Access [https://cds.climate.copernicus.eu/](https://cds.climate.copernicus.eu/).__
    - Sign up for an account (top right of page)
-   - Once you are logged in follow the [instructions](https://cds.climate.copernicus.eu/how-to-api) on how to create the API key. In the end it will look like this:
+   - Once you are logged in follow the [instructions](https://cds.climate.copernicus.eu/how-to-api) on how to create the API key. In the end your COPERNICUS_KEY will look like this:
       ```
       url: https://cds.climate.copernicus.eu/api
       key: <your copernicus key here>
       ```
-   - Then save the key file as COPERNICUS_KEY in this directory.
 
 - __United States Geological Survey (USGS)  Authenticated Downloads [https://ers.cr.usgs.gov/login](https://ers.cr.usgs.gov/login)__. 
    - Create new account (bottom of left column)
