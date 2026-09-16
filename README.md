@@ -15,7 +15,7 @@ A docker compose file and a set of containers that integrate work from the [OHDS
 - [Profiles](#profiles)
 - [Architecture](#architecture)
 - [Database Maintenance](#database-maintenance)
-- [Degauss geocoder](#degauss=geocoder)
+- [Degauss geocoder](#degauss-geocoder)
 - [Support](#support)
 - [Developer Guidelines](#developer-guidelines)
 
