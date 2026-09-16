@@ -275,7 +275,7 @@ Note that you can do this with any profile(s) that you are using.
 
 ## Degauss geocoder
 
-The gaia-degauss iamge included in the Gaia toolchain is a copy of the latest [degauss geocoder](https://degauss.org/geocoder/) with the R packages plumber and degauss packages installed. This allows an integration in the gaiaCore Hades container or any other R environment. To use locate the variable $GAIA_DEGAUSS_API_PORT in the .env file (default 5150):
+The gaia-degauss image included in the Gaia toolchain is a copy of the latest [degauss geocoder](https://degauss.org/geocoder/) with the R plumber and degauss packages installed. This allows a degauss integration in the gaiaCore Hades container or any other R environment. To use locate the variable $GAIA_DEGAUSS_API_PORT in the .env file (default 5150):
 
 ```
 https://localhost:$GAIA_DEGAUSS_API_PORT/geocode?address=URLeconcdedAddressString
