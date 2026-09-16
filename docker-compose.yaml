@@ -299,7 +299,8 @@ services:
     profiles: [ "degauss" ]
     container_name: gaia-degauss
     build:
-      context: ${GAIA_DEGAUSS_GITHUB_URL}
+      context: ./docker
+      dockerfile: ./gaia-degauss/Dockerfile
     image: gaia-degauss
     restart: unless-stopped
     #entrypoint: ["bash", "-c", "sleep 9999"] # for development

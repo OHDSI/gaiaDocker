@@ -15,6 +15,7 @@ A docker compose file and a set of containers that integrate work from the [OHDS
 - [Profiles](#profiles)
 - [Architecture](#architecture)
 - [Database Maintenance](#database-maintenance)
+- [Degauss geocoder](#degauss=geocoder)
 - [Support](#support)
 - [Developer Guidelines](#developer-guidelines)
 
@@ -231,7 +232,7 @@ This repository contains the Docker Compose file used to launch the OHDSI gaiaDo
 |gaia-git|gaia-tcp-api|isolated git for using external code|[OHDSI/gaiaDocker#main:./docker/ohdsi-git](https://github.com/OHDSI/gaiaDocker)|
 |gaia-gdsc|gaia-tcp-api|isolated python environment for data processing|[OHDSI/gaiaDocker#main:./docker/ohdsi-gdsc](https://github.com/OHDSI/gaiaDocker)|
 |gaia-core|gaia-core|Hades based R environment with additional GIS toolchain|[OHDSI/GIS#containerize:./docker/gaia-core](https://github.com/OHDSI/GIS)  
-|gaia-degauss|degauss|degauss geocoder for adding lat/lon to address information|[GDSC/docker#ohdsi:./builds/degauss](https://github.com/Geospatial-Digital-Special-Collections/docker)|
+|gaia-degauss|degauss|degauss geocoder for adding lat/lon to address information. Note this build has the R plumber and degauss packages installed and configuresd so you can access the degauss API with R.|[OHDSI/gaiaDocker#main:./docker/gaia-degauss](https://github.com/OHDSI/gaiaDocker/docker/gaia-degauss)|
 
 ## Database Maintenance
 
@@ -271,6 +272,16 @@ docker volume rm gaia-solr
 docker-compose --profile gaia up -d
 ```
 Note that you can do this with any profile(s) that you are using.
+
+## Degauss geocoder
+
+The gaia-degauss iamge included in the Gaia toolchain is a copy of the latest [degauss geocoder](https://degauss.org/geocoder/) with the R packages plumber and degauss packages installed. This allows an integration in the gaiaCore Hades container or any other R environment. To use locate the variable $GAIA_DEGAUSS_API_PORT in the .env file (default 5150):
+
+```
+https://localhost:$GAIA_DEGAUSS_API_PORT/geocode?address=URLeconcdedAddressString
+```
+
+You can also use the standard degauss APIs for the geocoder. See their [documentation](https://degauss.org/geocoder/).
 
 ## Support
 
