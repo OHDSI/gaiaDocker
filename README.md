@@ -50,23 +50,25 @@ Before starting gaiaDocker containers, you must authenticate to GitHub Container
 # Create a GitHub PAT with read:packages scope in order to authenticate (see above instructions)
    
 export CR_PAT=YOUR_TOKEN
-echo $CR_PAT | docker login ghcr.io -u USERNAME --password-stdin
+echo $CR_PAT | docker login ghcr.io -u YOUR_USERNAME --password-stdin
 
 # > Login Succeeded
 ```
 
-### gaiaDocker
+### gaiaDocker for development
 
 Run the following script in your shell to gather the three required components of the OHDSI gaiaDocker project and build the gaia-db and gaia-catalog containers.
 
 ```shell
 git clone git@github.com:OHDSI/gaiaDocker.git
-git clone git@github.com:OHDSI/gaiaDB.git
+git clone git@github.com:OHDSI/gaiaDB.git # not needed unless building for development
 git clone git@github.com:OHDSI/gaiaCatalog.git
 
+# the build is only useful for development
 cd gaiaDB
 docker build -t gaia-db .
 
+# the build is only useful for development
 cd ../gaiaCatalog
 docker build -t gaia-catalog .
 ```
@@ -79,19 +81,49 @@ It is likely the gaia-core container will run, but RStudio login will fail on Ma
 
 ## Quick Start
 
-Before running docker compose for the first time we must create empty secret files or create accounts for authentication (see the [README](secrets/gaia/README.md) in the ./secrets/gaia directory). To start without secrets you must create empty secrets with the create_secrets script.
+The fastest way to deploy the Gaia toolchain is using gaiaDocker from the command line (terminal/bash on mac/linux or powershell on windows):
 
-#### macOS/linux
-
-```shell
-bash create_secrets.sh # you only need to run this once to create blank secrets
+```bash
+# Clone gaiaDocker repository
+git clone https://github.com/OHDSI/gaiaDocker.git
+git clone https://github.com/OHDSI/gaiaCatalog.git
+cd gaiaDocker
 ```
 
-#### windows
+### create blank secrets (only do this once)
 
-```shell
-./create_secrets.ps1
+The Gaia toolchain leverages Docker secrets to enable data retrieval from datasources that require authentication. For the quickstart we recommend running the script below to create empty secrets, and then see the [Gaia secrets documentation](secrets/gaia/README.md) for instructions to create the secrets for the sources you will use.  
+
+mac/linux
+```bash
+bash ./create_secrets.sh
 ```
+
+windows
+```shell
+./create_secrets.ps1 # windows
+```
+
+### login to the github docker image repository
+
+Before the next step, you must create a [github personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) (PAT) and use it to login the the github docker repository to pull the repository docker images.
+
+1. login to your github account
+2. in the top-right corner click your profile picutre and click _settings_
+3. in the left menu click _Credentials_ and click _Personal access Tokens (classic)_
+4. near the top right click the _Generate new token_ button anc choose _Generate new token (classic)_
+5. follow the instructions for two-step verification
+6. give the token a recognizable name (ghcr-ro-access) in the _Note_ field
+   a. set the expiration
+   b. check the box next to _read:packages_ (under _write:packages_)
+   c. at the bottom, click the _Generate token_ button
+7. save the token in a safe place, you will not see it again
+
+```
+echo "YOUR_GITHUB_PAT" | docker login ghcr.io -u YOUR_USERNAME --password-stdin
+```
+
+### start the full Gaia stack
 
 
 ```shell
@@ -100,7 +132,7 @@ docker compose --profile gaia up -d
 ```
 On the first start it may take several minutes for the other supporting containers to build and compose. NOTE: there are several profiles available (see [Profiles](#profiles)).
 
-Once everything is running, use a web browser to navigate to the catalog discovery application at `http://localhost:5000`.
+Once everything is running, use a web browser to navigate to the catalog discovery application at `http://localhost:5000`. There is an alternative discovery application at `https://ohdsi.github.io/gaiaCatalog/browser`.
 
 From the main page you can browse and search for datasets available in the catalog.
 
@@ -142,7 +174,19 @@ Note that you must use the same profile(s) in the `docker compose down` command 
 
 ## Secrets  
 
-All secrets are in the top-level ./secrets folder. For gaiaDocker there is a gaia subfolder with gaia specific secrets. Note that you should change your internal secrets (postgres, internal API, etc) and that you will need to provide your own external API secrets (Copernicus, Census, Earth Explorer, and so on).  
+The Gaia toolchain leverages Docker secrets to enable data retrieval from datasources that require authentication. All secrets are in the top-level ./secrets folder. For gaiaDocker there is a gaia subfolder with gaia specific secrets. For the quickstart we recommend running the script below to create empty secrets, and then see the [Gaia secrets documentation](secrets/gaia/README.md) for instructions to create the secrets for the sources you will use.  
+
+mac/linux
+```bash
+bash ./create_secrets.sh
+```
+
+windows
+```shell
+./create_secrets.ps1 # windows
+```
+
+Note that you should change your internal secrets (postgres, internal API, etc) and that you will need to provide your own external API secrets (Copernicus, Census, Earth Explorer, and so on).  
 
 If you do not have keys and authenticator accounts for the external APIS see the [README.md](secrets/gaia/README.md) in the secrets/gaia directory of this repository for instructions on how to create them.
 

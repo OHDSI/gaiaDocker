@@ -5,6 +5,7 @@ FROM postgrest/postgrest:latest AS base
 
 FROM base AS build-arm64
 COPY --from=shell-installer /bin/sh /bin/sh
+COPY --from=shell-installer /lib/ld-musl-aarch64.so.1 /lib/
 COPY --from=shell-installer /bin/cat /bin/cat
 COPY --from=shell-installer /bin/ls /bin/ls
 
