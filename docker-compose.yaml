@@ -7,6 +7,8 @@ volumes:
     name: gaia-solr
   gaia-db:
     name: gaia-db
+  gaia-pgadmin:
+    name: gaia-pgadmin
 
 services:
 
@@ -103,6 +105,26 @@ services:
       PGRST_OPENAPI_SERVER_PROXY_URI: http://127.0.0.1:${GAIA_POSTGREST_API_PORT}
     ports:
       - "${GAIA_POSTGREST_API_PORT}:${GAIA_POSTGREST_API_PORT}"
+    depends_on:
+      gaia-db:
+        condition: service_healthy
+
+  gaia-pgadmin:
+    profiles: [ "gaia" ]
+    image: dpage/pgadmin4:latest
+    container_name: gaia-pgadmin
+    restart: unless-stopped
+    secrets:
+      - GAIA_PGADMIN_PASSWORD
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${GAIA_PGADMIN_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD_FILE: /run/secrets/GAIA_PGADMIN_PASSWORD
+      PGADMIN_SERVER_JSON_FILE: /pgadmin4/servers.json
+    ports:
+      - "${GAIA_PGADMIN_PORT}:80"
+    volumes:
+      - gaia-pgadmin:/var/lib/pgadmin
+      - ./docker/gaia-pgadmin/servers.json:/pgadmin4/servers.json:ro
     depends_on:
       gaia-db:
         condition: service_healthy
@@ -307,6 +329,8 @@ secrets:
     file: ${GAIA_POSTGRES_PASSWORD_FILE}
   GAIA_AUTHENTICATOR_PASSWORD:
     file: ${GAIA_AUTHENTICATOR_PASSWORD_FILE}
+  GAIA_PGADMIN_PASSWORD:
+    file: ${GAIA_PGADMIN_PASSWORD_FILE}
   GAIA_X_API_KEY:
     file: ${GAIA_X_API_KEY_FILE}
   GAIA_COPERNICUS_KEY:

@@ -8,6 +8,7 @@ You should change the following secrets from their defaults:
 - GAIA_X_API_KEY
 - POSTGRES_PASSWORD
 - AUTHENTICATOR_PASSWORD
+- PGADMIN_PASSWORD
 
 NOTE: this list does not include other keys that should be changed in the OHDSI Broadsea implementation.
 

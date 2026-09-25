@@ -1,0 +1,13 @@
+{
+  "Servers": {
+    "1": {
+      "Name": "gaia-db",
+      "Group": "Servers",
+      "Host": "gaia-db",
+      "Port": 5432,
+      "MaintenanceDB": "gaiacore",
+      "Username": "postgres",
+      "SSLMode": "prefer"
+    }
+  }
+}
