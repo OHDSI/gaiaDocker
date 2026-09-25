@@ -41,10 +41,8 @@ services:
   gaia-db:
     profiles: [ "gaia", "gaia-db", "gaia-tcp-api" ]
     # image: ghcr.io/ohdsi/gaia-db
-    image: gaia-db
-    build:
-      context: ${GAIA_DB_GITHUB_URL}
-      dockerfile: ./Dockerfile
+    image: ohdsi/gaia-db:main
+    platform: linux/amd64
     container_name: gaia-db
     restart: unless-stopped
     secrets:
@@ -88,10 +86,8 @@ services:
 
   gaia-postgrest:
     profiles: [ "gaia" ]
-    image: gaia-postgrest
-    build:
-      context: ./docker/
-      dockerfile: ./gaia-postgrest/Dockerfile
+    image: ohdsi/gaia-postgrest:main
+    platform: linux/amd64
     container_name: gaia-postgrest
     restart: unless-stopped
     secrets:
@@ -114,11 +110,8 @@ services:
   # one gaia-catalog version for the postgrest API
   gaia-catalog-pg:
     profiles: [ "gaia" ]
-    # image: ghcr.io/ohdsi/gaia-catalog
-    image: gaia-catalog
-    build: 
-      context: ${GAIA_CATALOG_GITHUB_URL}
-      dockerfile: ./docker/repository/Dockerfile
+    image: ohdsi/gaia-catalog:main
+    platform: linux/amd64
     container_name: gaia-catalog
     restart: unless-stopped
     secrets:
@@ -144,7 +137,6 @@ services:
   # second gaia-catalog version for the tcp-based API
   gaia-catalog-tcp:
     profiles: [ "gaia-tcp-api" ]
-    # image: ghcr.io/ohdsi/gaia-catalog
     image: gaia-catalog
     build: 
       context: ${GAIA_CATALOG_GITHUB_URL}
@@ -173,12 +165,9 @@ services:
 
   gaia-solr:
     profiles: [ "gaia", "gaia-tcp-api" ]
-    # image: ghcr.io/ohdsi/gaia-solr
-    image: gaia-solr
+    image: ohdsi/gaia-solr:main
+    platform: linux/amd64
     container_name: gaia-solr
-    build: 
-      context: ${GAIA_CATALOG_GITHUB_URL}
-      dockerfile: ./docker/solr/Dockerfile
     restart: unless-stopped
     ports:
       - "${GAIA_SOLR_API_PORT}:8983"
