@@ -44,6 +44,7 @@ services:
     profiles: [ "gaia", "gaia-db", "gaia-tcp-api" ]
     # image: ghcr.io/ohdsi/gaia-db
     image: ohdsi/gaia-db:main
+    pull_policy: always
     platform: linux/amd64
     container_name: gaia-db
     restart: unless-stopped
@@ -89,6 +90,7 @@ services:
   gaia-postgrest:
     profiles: [ "gaia" ]
     image: ohdsi/gaia-postgrest:main
+    pull_policy: always
     platform: linux/amd64
     container_name: gaia-postgrest
     restart: unless-stopped
@@ -133,6 +135,7 @@ services:
   gaia-catalog-pg:
     profiles: [ "gaia" ]
     image: ohdsi/gaia-catalog:main
+    pull_policy: always
     platform: linux/amd64
     container_name: gaia-catalog
     restart: unless-stopped
@@ -188,6 +191,7 @@ services:
   gaia-solr:
     profiles: [ "gaia", "gaia-tcp-api" ]
     image: ohdsi/gaia-solr:main
+    pull_policy: always
     platform: linux/amd64
     container_name: gaia-solr
     restart: unless-stopped
