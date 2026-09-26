@@ -42,7 +42,6 @@ services:
 
   gaia-db:
     profiles: [ "gaia", "gaia-db", "gaia-tcp-api" ]
-    # image: ghcr.io/ohdsi/gaia-db
     image: ohdsi/gaia-db:main
     pull_policy: always
     platform: linux/amd64
@@ -91,7 +90,6 @@ services:
     profiles: [ "gaia" ]
     image: ohdsi/gaia-postgrest:main
     pull_policy: always
-    platform: linux/amd64
     container_name: gaia-postgrest
     restart: unless-stopped
     secrets:
@@ -136,7 +134,6 @@ services:
     profiles: [ "gaia" ]
     image: ohdsi/gaia-catalog:main
     pull_policy: always
-    platform: linux/amd64
     container_name: gaia-catalog
     restart: unless-stopped
     secrets:
@@ -162,7 +159,7 @@ services:
   # second gaia-catalog version for the tcp-based API
   gaia-catalog-tcp:
     profiles: [ "gaia-tcp-api" ]
-    image: gaia-catalog
+    image: ohdsi/gaia-catalog:main
     build: 
       context: ${GAIA_CATALOG_GITHUB_URL}
       dockerfile: ./docker/repository/Dockerfile
