@@ -149,7 +149,8 @@ services:
     ports:
       - "${GAIA_CATALOG_API_PORT}:5000"
     depends_on:
-      - gaia-solr
+      gaia-solr:
+        condition: service_healthy
     #entrypoint: ["tail","-f","/dev/null"] # for development
     entrypoint: ["sh", "-c", "sleep 15 && python ohdsi.py"]
     volumes:
@@ -178,7 +179,8 @@ services:
     ports:
       - "${GAIA_CATALOG_API_PORT}:5000"
     depends_on:
-      - gaia-solr
+      gaia-solr:
+        condition: service_healthy
     #entrypoint: ["tail","-f","/dev/null"] # for development
     entrypoint: sh -c "sleep 15 && python ohdsi.py"
     volumes:
@@ -189,8 +191,13 @@ services:
     profiles: [ "gaia", "gaia-tcp-api" ]
     image: ohdsi/gaia-solr:main
     pull_policy: always
-    platform: linux/amd64
     container_name: gaia-solr
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8983/solr/admin/info/system"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
     restart: unless-stopped
     ports:
       - "${GAIA_SOLR_API_PORT}:8983"
