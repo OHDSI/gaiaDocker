@@ -1,16 +1,15 @@
-
-
 # gaiaDocker
 
-A docker compose file and a set of containers that integrate work from the [OHDSI GIS workgroup](https://github.com/OHDSI). Specificially, gaiaDocker provides integration between the [gaiaDB](https://github.com/OHDSI/gaiaDB) and [gaiaCatalog](https://github.com/OHDSI/gaiaCatalog) projects through a browser-based dataset discovery tool for the gaia-catalog with API connections to gaia-db. It is build based on the [OHDSI Broadsea](https://github.com/OHDSI/broadsea) architecture.
+This repository containes a docker compose file and a set of specifications for docker containers that integrate work from the [OHDSI GIS workgroup](https://github.com/OHDSI). Specificially, gaiaDocker provides integration between the [gaiaDB](https://github.com/OHDSI/gaiaDB) and [gaiaCatalog](https://github.com/OHDSI/gaiaCatalog) projects through a browser-based dataset discovery tool. gaiaDocker is built based on the [OHDSI Broadsea](https://github.com/OHDSI/broadsea) architecture.
 
 > **Status:** under active development
 
 ## Contents
 
-- [Installation](#installation)
+- [Docker Installation](#dockeriinstallation)
 - [Quick Start](#quick-start)
 - [Shutdown](#shutdown)
+- [gaiaDocker for Development](#gaiadocker-for-development)
 - [Secrets](#secrets)
 - [Profiles](#profiles)
 - [Architecture](#architecture)
@@ -20,14 +19,16 @@ A docker compose file and a set of containers that integrate work from the [OHDS
 - [Developer Guidelines](#developer-guidelines)
 
 
-## Installation
+## Docker Installation
 
 ### Dependencies  
 
 - Linux, Mac, or Windows with WSL
 - Docker 1.27.0+
+- Docker Compose 2.0+
 - Git
 - Chromium-based web browser (Chrome, Edge, etc.)
+- 50GB+ disk space
 
 ### Docker
 
@@ -44,21 +45,104 @@ Download and install Docker.
 
 Throughout this README, we will show docker compose commands with the convention of `docker compose` (with no hyphen), per the new Docker Compose V2 standard outlined by [Docker](https://docs.docker.com/compose/migrate/#docker-compose-vs-docker-compose).  You may need to use `docker-compose` dpending on your version of docker.
 
-### Github Personal Access Token
-Before starting gaiaDocker containers, you must authenticate to GitHub Container Registry (GHCR). This step is required to access the osgeo/gdal image. Detailed instructions [here](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry#authenticating-to-the-container-registry). Basic steps for authenticating in a command line / terminal window with a Personal Access Token (PAT) below:
 
-```shell
-# Create a GitHub PAT with read:packages scope in order to authenticate (see above instructions)
-   
-export CR_PAT=YOUR_TOKEN
-echo $CR_PAT | docker login ghcr.io -u YOUR_USERNAME --password-stdin
+## Quick Start
 
-# > Login Succeeded
+The fastest way to deploy gaiaDocker is from the command line (terminal/bash on mac/linux or powershell on windows):
+
+```bash
+# Clone gaiaDocker repository
+git clone https://github.com/OHDSI/gaiaDocker.git
+git clone https://github.com/OHDSI/gaiaCatalog.git
+cd gaiaDocker
 ```
 
-### gaiaDocker for development
+### create blank secrets (only do this once)
 
-Run the following script in your shell to gather the three required components of the OHDSI gaiaDocker project and build the gaia-db and gaia-catalog containers.
+The Gaia toolchain leverages Docker secrets to enable data retrieval from datasources that require authentication. For the quickstart we recommend running the script in the gaiaDocker root directory to create empty secrets, and then see the [Gaia secrets documentation](secrets/gaia/README.md) for instructions to create the secrets for the sources you will use.  
+
+mac/linux
+```bash
+bash ./create_secrets.sh
+```
+
+windows
+```bash
+./create_secrets.ps1 # windows
+```
+
+### start the full Gaia stack
+
+```bash
+# Start the full Gaia stack
+docker compose --profile gaia up -d
+```
+
+On the first start it may take several minutes to pull the containers from the docker hub container repository. NOTE: there are several profiles available (see [Profiles](#profiles)).
+
+### verify services are running
+```
+# Verify services are running
+docker compose ps
+```
+
+**What's deployed**:
+- **gaia-db**: PostgreSQL/PostGIS (core data repository)  
+- **gaia-postgrest**: PostgREST API (exposes gaiaDb functions)  
+- **gaia-catalog**: Data source discovery interface  
+- **gaia-solr**: Search engine for catalog  
+
+### testing
+
+You can test various endpoints from the command line
+
+```bash
+# connect to the gaia-db database ...
+# result: you will enter into a psql command line environment
+docker compose exec gaia-db psql -U postgres -d gaiacore 
+
+# test the postgrest API ...
+# result: you will see a long sumamry of available funcitonality
+curl http://localhost:3000/
+```
+
+You can also use a web browser to navigate to:
+
+- `http://localhost:5001`: the catalog discovery application
+- `https://ohdsi.github.io/gaiaCatalog/browser`: an alternative catalog browser
+
+From the main pages of either browser you can view descriptive entries for datasets available in the catalog.
+
+### Dataset Ingestion
+
+On the either catalog browser click on the red dot next to the dataset name to start the dataset ingestion pipeline. The application will communicate with the gaia-db container and set in motion a pipeline to retrieve the data from an external source and then ETL the dataset into a staging table in the _public_ schema of the _gaiacore_ postgis database.
+
+If the process completes successfully the dot will turn green.
+
+### Variable Ingestion
+
+Navigate to a dataset detail view by clicking a dataset title. On the view for the variable level metadata, click on a red dot next to a variable name to start the variable ingestion pipeline. The application will communicate with the gaia-db container and set in motion a pipeline to ingest geometries and attribute for the chosen variable into the respective geom and attr tables in the _working_ schema of the _gaiacore_ database running on the gaia-db container. Metadata for the geometries and attribute will also be ingested into the geom-index and attr_index tables of the _backbone_ schema of the _gaiacore_ database.
+
+If the process completes successfully the dot will turn green.
+
+### Next Steps
+
+Once you have all of you variables loaded you can proceed to the spatial join steps in the _gaiacore_ database on the gaia-db container. For more information about these ingestion steps and the spatial join see the README at [gaiaDB](https://github.com/OHDSI/gaiaDB).
+
+## Shutdown
+
+You do not have to shut the docker compose down, but it does consume resources in the background and a graceful shutdown is recommended. Note that the Postgis data directory for the _gaiacore_ database on the gaia-db container and the SOLR index on the gaia-solr container will persist between sessions.
+
+```shell
+cd ./gaiaDocker
+docker compose --profile gaia down
+```
+
+Note that you must use the same profile(s) in the `docker compose down` command that you used in the `docker compuse up` command. See [Profiles](#profiles) below.
+
+## gaiaDocker for development
+
+Run the following script in your shell will gather the three required components of the OHDSI gaiaDocker project and create local builds for the gaia-db and gaia-catalog containers.
 
 ```shell
 git clone git@github.com:OHDSI/gaiaDocker.git
@@ -80,79 +164,6 @@ If using Mac Silicon (M1, M2, etc), you _may_ need to set the DOCKER_ARCH variab
 
 It is likely the gaia-core container will run, but RStudio login will fail on Mac Silicon. The base Hades image upon which this version of gaia-core is built is only maintained for amd64 architectures.  
 
-## Quick Start
-
-The fastest way to deploy the Gaia toolchain is using gaiaDocker from the command line (terminal/bash on mac/linux or powershell on windows):
-
-```bash
-# Clone gaiaDocker repository
-git clone https://github.com/OHDSI/gaiaDocker.git
-git clone https://github.com/OHDSI/gaiaCatalog.git
-cd gaiaDocker
-```
-
-### create blank secrets (only do this once)
-
-The Gaia toolchain leverages Docker secrets to enable data retrieval from datasources that require authentication. For the quickstart we recommend running the script below to create empty secrets, and then see the [Gaia secrets documentation](secrets/gaia/README.md) for instructions to create the secrets for the sources you will use.  
-
-mac/linux
-```bash
-bash ./create_secrets.sh
-```
-
-windows
-```shell
-./create_secrets.ps1 # windows
-```
-
-### login to the github docker image repository
-
-Before the next step, you must create a [github personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) (PAT) and use it to login the the github docker repository to pull the repository docker images.
-
-1. login to your github account
-2. in the top-right corner click your profile picutre and click _settings_
-3. in the left menu click _Credentials_ and click _Personal access Tokens (classic)_
-4. near the top right click the _Generate new token_ button anc choose _Generate new token (classic)_
-5. follow the instructions for two-step verification
-6. give the token a recognizable name (ghcr-ro-access) in the _Note_ field
-   a. set the expiration
-   b. check the box next to _read:packages_ (under _write:packages_)
-   c. at the bottom, click the _Generate token_ button
-7. save the token in a safe place, you will not see it again
-
-```
-echo "YOUR_GITHUB_PAT" | docker login ghcr.io -u YOUR_USERNAME --password-stdin
-```
-
-### start the full Gaia stack
-
-
-```shell
-cd ./gaiaDocker
-docker compose --profile gaia up -d
-```
-On the first start it may take several minutes for the other supporting containers to build and compose. NOTE: there are several profiles available (see [Profiles](#profiles)).
-
-Once everything is running, use a web browser to navigate to the catalog discovery application at `http://localhost:5000`. There is an alternative discovery application at `https://ohdsi.github.io/gaiaCatalog/browser`.
-
-From the main page you can browse and search for datasets available in the catalog.
-
-### Dataset Ingestion
-
-On the main search interface click on the red dot next to the dataset name to start the dataset ingestion pipeline. The application will communicate with the gaia-db container and set in motion a pipeline to retrieve the data from an external source and then ETL the dataset into a staging table in the _public_ schema of the _gaiacore_ postgis database.
-
-If the process completes successfully the dot will turn green.
-
-### Variable Ingestion
-
-On the main search page click on the dataset title to view the dataset details, including all variable level metadata. On the view for the variable level metadata, click on a red dot next to a variable name to start the variable ingestion pipeline. The application will communicate with the gaia-db container and set in motion a pipeline to ingest geometries and attribute for the chosen variable into the respective geom and attr tables in the _working_ schema of the _gaiacore_ database running on the gaia-db container. Metadata for the geometries and attribute will also be ingested into the geom-index and attr_index tables of the _backbone_ schema of the _gaiacore_ database.
-
-If the process completes successfully the dot will turn green.
-
-### Next Steps
-
-Once you have all of you variables loaded you can proceed to the spatial join steps in the _gaiacore_ database on the gaia-db container. For more information about these ingestion steps and the spatial join see the README at [gaiaDB](https://github.com/OHDSI/gaiaDB).
-
 ### Additional Views and Functionality 
 
 Once all containers are running with either the gaia or gaia-tcp-api profiles you can explore these additional views and functionality.
@@ -160,18 +171,6 @@ Once all containers are running with either the gaia or gaia-tcp-api profiles yo
 - In the gaia-solr (localhost:8983) you can explore the two indexes (collections and dcat). The dcat collection is the index for the data layers.
 - In the gaia-core (localhost:8787) you can login as user:ohdsi with pass:mypass to run RStudio with the geospatial extensions loaded (windows only)
 - You can connect to the _gaiacore_ database on the gaia-db container with a postgres client like PGAdmin or QGIS with host:localhost, port:5433, database:gaiacore, user:postgres, pass:SuperSecret (these are the defaul values in the top level .env file).
-
-
-## Shutdown
-
-You do not have to shut the docker compose down, but it does consume resources in the background and a graceful shutdown is recommended. Note that the Postgis data directory for the _gaiacore_ database on the gaia-db container and the SOLR index on the gaia-solr container will persist between sessions.
-
-```shell
-cd ./gaiaDocker
-docker compose --profile gaia down
-```
-
-Note that you must use the same profile(s) in the `docker compose down` command that you used in the `docker compuse up` command. See [Profiles](#profiles) below.
 
 ## Secrets  
 
@@ -195,21 +194,14 @@ If you do not have keys and authenticator accounts for the external APIS see the
 
 You can choose from two base profiles and then add-on additional profiles as needed.
 
-| Base Profile | Use Case |
+| Profile | Use Case |
 | ------ | ------ |
 | gaia | Runs the integrated stack using the postgrest API. Choose this for most use cases. |
 | gaia-tcp-api | Runs the integrated stack using the tcp-base API and isolated ETL processes (experimental). |
-
-```bash
-# Run as the basic configuration with the postgrest API
-docker compose --profile gaia up -d
-```
-
-| Add-on Profile | Use Case |
-| ------ | ------ |
 | gaia-core | Runs the additional Hades image with the gaia analytic toolset. This depends on either gaia or gaia-tcp-api. |
 | degauss | Runs the degauss geocoder. | 
 
+An example with two ptofiles loaded:
 ```bash
 # Run as the basic configuration with the postgrest API and the degauss container
 docker compose --profile gaia --profile degauss up -d
@@ -256,6 +248,7 @@ Note that you can do this with any profile(s) that you are using.
 You can update the catalog entires by pulling new json files from the gaiaCatalog repository. In a command line / terminal window navigate to the gaiaCatalog directory and run:
 
 ```shell
+cd gaiaCatalog
 git pull origin main
 ```
 
@@ -266,6 +259,7 @@ This updates the json files used as the source of truth for the catalog. NOTE: o
 The easiest way to do this is to navigate to the gaiaDocker directory in a command line / terminal window and rebuild the gaia-solr docker image and gaia-solr docker volume as follows:
 
 ```shell
+cd gaiaDocker
 docker-compose --profile gaia down
 docker image rm gaia-solr
 docker volume rm gaia-solr
