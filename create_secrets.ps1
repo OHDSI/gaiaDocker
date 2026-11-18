@@ -25,4 +25,4 @@ if (-not (Test-Path ".\secrets\gaia\USGS_USER")) {
   New-Item -Path ".\secrets\gaia\USGS_USER" -ItemType File
 }
 
-Write-Host "all secrets checked and created as empty if none found"Item_type
+Write-Host "all secrets checked and created as empty if none found"
